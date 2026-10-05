@@ -1,0 +1,35 @@
+{
+  "name": "microcms-typegen",
+  "version": "1.0.0",
+  "description": "Generate TypeScript content types from microCMS Management API schemas",
+  "license": "Apache-2.0",
+  "type": "module",
+  "types": "./src/config.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/config.d.ts"
+    }
+  },
+  "bin": {
+    "microcms-typegen": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "test:types": "node scripts/check-typescript.mjs",
+    "test:package": "node scripts/check-package.mjs",
+    "typegen": "node ./src/cli.js generate",
+    "typegen:check": "node ./src/cli.js check",
+    "test:performance": "node scripts/check-type-performance.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "files": [
+    "src",
+    "microcms-typegen.config.example.ts"
+  ]
+}

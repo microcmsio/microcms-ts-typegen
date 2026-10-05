@@ -1,0 +1,66 @@
+{
+  "apis": [
+    {
+      "endpoint": "nodes",
+      "type": "list"
+    },
+    {
+      "endpoint": "settings",
+      "type": "object"
+    }
+  ],
+  "schemas": {
+    "nodes": {
+      "apiFields": [
+        {
+          "fieldId": "title",
+          "kind": "text"
+        },
+        {
+          "fieldId": "parent",
+          "kind": "relation",
+          "referencedApiEndpoint": "nodes"
+        },
+        {
+          "fieldId": "children",
+          "kind": "relationList",
+          "referencedApiEndpoint": "nodes"
+        },
+        {
+          "fieldId": "custom",
+          "kind": "custom",
+          "customFieldId": "branch"
+        },
+        {
+          "fieldId": "blocks",
+          "kind": "repeater",
+          "customFieldIds": [
+            "branch"
+          ]
+        }
+      ],
+      "customFields": [
+        {
+          "fieldId": "branch",
+          "fields": [
+            {
+              "fieldId": "target",
+              "kind": "relation",
+              "referencedApiEndpoint": "nodes"
+            }
+          ]
+        }
+      ]
+    },
+    "settings": {
+      "apiFields": [
+        {
+          "fieldId": "featured",
+          "kind": "relation",
+          "referencedApiEndpoint": "nodes"
+        }
+      ],
+      "customFields": []
+    }
+  }
+}
