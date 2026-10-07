@@ -4,9 +4,9 @@ import { mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { run } from '../src/cli.js';
-import { collectSchemas, generateTypes } from '../src/generate.js';
-import { createManagementClient } from '../src/management.js';
+import { run } from '../dist/cli.js';
+import { collectSchemas, generateTypes } from '../dist/generate.js';
+import { createManagementClient } from '../dist/management.js';
 
 const configSource = (config) => `export default ${JSON.stringify(config)};\n`;
 
@@ -40,7 +40,7 @@ const schemas = {
 };
 
 test('CLI help shows value formats and usable examples', () => {
-  const help = execFileSync(process.execPath, ['src/cli.js', '--help'], { encoding: 'utf8' });
+  const help = execFileSync(process.execPath, ['dist/cli.js', '--help'], { encoding: 'utf8' });
   assert.match(help, /<init\|generate\|check>/);
   assert.doesNotMatch(help, /--service-domain|--api-key|--output|--endpoints/);
   assert.match(help, /--config <file.ts>/);
@@ -119,7 +119,7 @@ test('CLI rejects unknown arguments that match inherited object properties befor
 
 test('CLI requires config even when environment credentials exist', async () => {
   const folder = await mkdtemp(join(tmpdir(), 'microcms-typegen-no-env-fallback-test-'));
-  const cli = new URL('../src/cli.js', import.meta.url).pathname;
+  const cli = new URL('../dist/cli.js', import.meta.url).pathname;
   const env = { ...process.env, MICROCMS_SERVICE_DOMAIN: 'sample', MICROCMS_API_INFO_API_KEY: 'secret-key' };
   for (const command of ['generate', 'check']) {
     const result = spawnSync(process.execPath, [cli, command], { cwd: folder, encoding: 'utf8', env });

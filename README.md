@@ -71,7 +71,8 @@ PRのレビュー時は、ここで対象PRのブランチをチェックアウ�
 
 ```sh
 npm ci
-node src/cli.js init
+npm run build
+node dist/cli.js init
 ```
 
 作成した`microcms-typegen.config.ts`の出力先を確認してください。
@@ -83,8 +84,8 @@ node src/cli.js init
 #### 3. 型を生成・確認する
 
 ```sh
-node src/cli.js generate
-node src/cli.js check
+node dist/cli.js generate
+node dist/cli.js check
 ```
 
 ### コマンドの役割

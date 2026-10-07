@@ -1,14 +1,26 @@
+import type { ApiInfo, ApiSchema, SchemaClient } from './schema.js';
+import { isRecord } from './validation.js';
+
+export type ManagementOptions = {
+  serviceDomain: string;
+  apiKey: string;
+  fetchImpl?: typeof fetch | undefined;
+  requestIntervalMs?: number | undefined;
+  timeoutMs?: number;
+  retryDelayMs?: number;
+};
+
 const DOMAIN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 const ENDPOINT = /^[a-zA-Z0-9_-]+$/;
 
-export function validateEndpoint(endpoint) {
+export function validateEndpoint(endpoint: unknown): string {
   if (typeof endpoint !== 'string' || !ENDPOINT.test(endpoint)) {
     throw new Error(`Invalid endpoint: ${JSON.stringify(endpoint)}`);
   }
   return endpoint;
 }
 
-export function createManagementClient({ serviceDomain, apiKey, fetchImpl = fetch, requestIntervalMs = 1100, timeoutMs = 30000, retryDelayMs = 1000 }) {
+export function createManagementClient({ serviceDomain, apiKey, fetchImpl = fetch, requestIntervalMs = 1100, timeoutMs = 30000, retryDelayMs = 1000 }: ManagementOptions): SchemaClient {
   if (typeof serviceDomain !== 'string' || !DOMAIN.test(serviceDomain)) {
     throw new Error('serviceDomain must be a microCMS service ID such as demo-site, without https:// or .microcms.io');
   }
@@ -18,13 +30,13 @@ export function createManagementClient({ serviceDomain, apiKey, fetchImpl = fetc
   if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) throw new Error('timeoutMs must be a positive number');
 
   let lastRequestAt = 0;
-  async function wait(milliseconds) {
+  async function wait(milliseconds: number): Promise<void> {
     if (milliseconds > 0) await new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
 
-  async function get(path) {
+  async function get(path: string): Promise<unknown> {
     const url = `https://${serviceDomain}.microcms-management.io/api/v1/${path}`;
-    let response;
+    let response: Response | undefined;
     for (let attempt = 0; attempt < 5; attempt++) {
       await wait(Math.max(0, lastRequestAt + requestIntervalMs - Date.now()));
       lastRequestAt = Date.now();
@@ -39,14 +51,15 @@ export function createManagementClient({ serviceDomain, apiKey, fetchImpl = fetc
           return await response.json();
         }
       } catch (error) {
-        if (readingBody && error?.name === 'SyntaxError') {
+        const errorName = isRecord(error) ? error.name : undefined;
+        if (readingBody && errorName === 'SyntaxError') {
           throw new Error(`Management API ${path} returned invalid JSON`);
         }
         if (attempt < 4) {
           await wait(Math.min(30000, retryDelayMs * 2 ** attempt));
           continue;
         }
-        const cause = error?.name === 'TimeoutError' || error?.name === 'AbortError'
+        const cause = errorName === 'TimeoutError' || errorName === 'AbortError'
           ? `timed out after ${timeoutMs} ms`
           : 'failed due to a network error';
         throw new Error(`Management API ${path} ${cause} after 5 attempts. Check the network and try again.`);
@@ -61,6 +74,7 @@ export function createManagementClient({ serviceDomain, apiKey, fetchImpl = fetc
         ? Math.min(30000, Math.max(0, seconds * 1000))
         : Math.min(30000, retryDelayMs * 2 ** attempt));
     }
+    if (!response) throw new Error(`Management API ${path} did not return a response`);
     if (!response.ok) {
       const hint = response.status === 400
         ? ' Check the request and API IP restrictions.'
@@ -78,20 +92,21 @@ export function createManagementClient({ serviceDomain, apiKey, fetchImpl = fetc
   }
 
   return {
-    async listApis() {
+    async listApis(): Promise<ApiInfo[]> {
       const result = await get('apis');
-      if (!Array.isArray(result?.apis)) throw new Error('Management API returned an invalid API list');
-      return result.apis.map((api) => ({
+      if (!isRecord(result) || !Array.isArray(result.apis)) throw new Error('Management API returned an invalid API list');
+      return result.apis.map((api: { endpoint: unknown; type: string }) => ({
         endpoint: validateEndpoint(api.endpoint),
         type: api.type,
       }));
     },
-    async getSchema(endpoint) {
+    async getSchema(endpoint: string): Promise<ApiSchema> {
       const result = await get(`apis/${encodeURIComponent(validateEndpoint(endpoint))}`);
-      if (!Array.isArray(result?.apiFields) || !Array.isArray(result?.customFields)) {
+      if (!isRecord(result) || !Array.isArray(result.apiFields) || !Array.isArray(result.customFields)) {
         throw new Error(`Management API returned an invalid schema for ${endpoint}`);
       }
-      return result;
+      // The envelope is checked here; field-specific validation remains in the generator.
+      return result as ApiSchema;
     },
   };
 }

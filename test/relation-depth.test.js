@@ -2,7 +2,7 @@ import test from 'node:test';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { generateTypes } from '../src/generate.js';
+import { generateTypes } from '../dist/generate.js';
 import { checkTypes } from './helpers/type-compiler.mjs';
 
 test('generated multi-level and cyclic references preserve depth boundaries and field paths', async () => {

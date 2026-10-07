@@ -34,9 +34,9 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
       - run: npm ci
-      - name: Unit tests and generated types
+      - name: Build, unit tests and generated types
         run: npm test
-      - name: TypeScript consumer types
+      - name: Source and TypeScript consumer types
         run: npm run test:types
       - name: Installed npm package check
         run: npm run test:package
@@ -56,7 +56,7 @@ jobs:
       - run: npm ci
       - name: Install minimum supported TypeScript separately
         run: npm install --prefix "$RUNNER_TEMP/microcms-ts6" --no-save --package-lock=false typescript@6.0.2
-      - name: TypeScript 6 consumer compatibility
+      - name: Source and TypeScript 6 consumer compatibility
         run: MICROCMS_TYPESCRIPT_BINARY="$RUNNER_TEMP/microcms-ts6/node_modules/typescript/bin/tsc" npm run test:types
       - name: Installed npm package compatibility with TypeScript 6
         run: MICROCMS_TYPESCRIPT_BINARY="$RUNNER_TEMP/microcms-ts6/node_modules/typescript/bin/tsc" npm run test:package

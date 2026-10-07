@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { createManagementClient } from '../src/management.js';
-import { collectSchemas } from '../src/generate.js';
+import { createManagementClient } from '../dist/management.js';
+import { collectSchemas } from '../dist/generate.js';
 import { checkTypes } from './helpers/type-compiler.mjs';
 
 test('captured Management API schemas generate the checked-in sample types', async () => {

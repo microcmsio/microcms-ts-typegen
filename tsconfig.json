@@ -8,5 +8,5 @@
     "exactOptionalPropertyTypes": true,
     "noEmit": true
   },
-  "include": ["microcms-typegen.config*.ts", "examples/**/*.ts"]
+  "include": ["src/**/*.ts", "microcms-typegen.config*.ts", "examples/**/*.ts"]
 }

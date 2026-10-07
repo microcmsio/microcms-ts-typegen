@@ -8,9 +8,12 @@ Node.js22.18以降を使用します。リポジトリのルートで依存関�
 
 ```sh
 npm ci
+npm run build
 ```
 
-設定ファイルの`process.env`には、開発依存関係の`@types/node`を使用します。ルートの`tsconfig.json`でNode.jsの型を読み込み、設定例と`examples/`をエディタと`npm run test:types`で型検査します。
+実装は`src/`のTypeScriptです。`npm run build`で`tsconfig.build.json`に従ってJavaScriptと型定義を`dist/`へ生成します。npmには`dist/`と設定例を含め、CLIは`dist/cli.js`を実行します。利用者側でのビルドやTypeScriptのインストールは不要です。
+
+設定ファイルの`process.env`には、開発依存関係の`@types/node`を使用します。ルートの`tsconfig.json`でNode.jsの型を読み込み、実装・設定例・`examples/`をエディタと`npm run test:types`で型検査します。
 
 ## テスト
 
@@ -18,7 +21,7 @@ npm ci
 npm test
 ```
 
-CLI・設定の検証、型生成、生成型のコンパイルを確認します。保存済みのマネジメントAPIスキーマから生成した型と、チェックイン済みのサンプルの一致も検査します。通常のテストはネットワークとAPIキー不要です。
+最初に実装をビルドし、ビルド済みJavaScriptを使ってCLI・設定の検証、型生成、生成型のコンパイルを確認します。保存済みのマネジメントAPIスキーマから生成した型と、チェックイン済みのサンプルの一致も検査します。通常のテストはネットワークとAPIキー不要です。
 
 開発用のTypeScriptは`^7.0.2`で7系に揃えています。`npm ci`ではlockfileに記録したバージョンを使用します。利用者向けの対応範囲はTypeScript6.0以降で、開発用コンパイラのバージョンとは別です。設定型・生成型・生成サンプルを確認するには次を実行します。
 
@@ -26,7 +29,7 @@ CLI・設定の検証、型生成、生成型のコンパイルを確認しま�
 npm run test:types
 ```
 
-通常の型検査には開発用の`tsc`を使います。CIではTypeScript6.0.2を別の一時ディレクトリへインストールし、設定型・生成型・インストールしたパッケージの互換性も検査します。ローカルの依存関係には6系を含めません。
+ビルドには開発用の`tsc`を使います。`test:types`も最初にビルドしてから、選択したコンパイラで実装・設定例・生成サンプルを型検査し、設定型と生成型のテストを実行します。CIではTypeScript6.0.2を別の一時ディレクトリへインストールし、同じ型検査とインストールしたパッケージの互換性を確認します。ローカルの依存関係には6系を含めません。
 
 テスト・パッケージ確認・性能測定で使うコンパイラを切り替える場合は、`MICROCMS_TYPESCRIPT_BINARY`にCLIの絶対パスを指定します。この指定は`npx tsc`やエディタが使うTypeScriptのバージョンには影響しません。
 
@@ -61,9 +64,9 @@ SDKの利用例・連携テスト・SDKを使った性能測定はSDKリポジ�
 npm run test:package
 ```
 
-`npm pack`で配布用の`.tgz`を作り、一時プロジェクトにインストールして確認します。
+`npm pack`の`prepack`で実装をビルドし、配布用の`.tgz`を作って一時プロジェクトにインストールして確認します。
 
-- ルートの`LICENSE`など必要な配布ファイルが含まれ、余分なファイルが入っていないこと
+- ビルド済みJavaScript・設定の型定義・ルートの`LICENSE`など必要な配布ファイルが含まれ、実装のTSソースなど余分なファイルが入っていないこと
 - インストールしたCLIの`init`・`generate`・`check`が動くこと
 - インストールしたパッケージの`Config`型と`satisfies Config`が選択したTypeScriptで利用できること（ローカルでは7系、CIでは6.0.2でも確認）
 
@@ -85,6 +88,6 @@ API通信は保存済みfixtureで置き換えます。一時ファイルは終�
 npm run test:performance
 ```
 
-実サービスから保存した4API、50APIの大きなサービス、多段・循環参照を持つ10APIについて、生成した型を`tsc --extendedDiagnostics`で検査します。`depth: 0`〜`3`の型、生成されたフィールドパス、書き込み型を直接参照し、`strict`・`exactOptionalPropertyTypes`を有効にします。SDKやAPI通信は不要です。SDKによるクエリの推論・型抽出の性能測定はSDKリポジトリの`npm run test:performance`に移しています。
+最初に実装をビルドします。実サービスから保存した4API、50APIの大きなサービス、多段・循環参照を持つ10APIについて、生成した型を`tsc --extendedDiagnostics`で検査します。`depth: 0`〜`3`の型、生成されたフィールドパス、書き込み型を直接参照し、`strict`・`exactOptionalPropertyTypes`を有効にします。SDKやAPI通信は不要です。SDKによるクエリの推論・型抽出の性能測定はSDKリポジトリの`npm run test:performance`に移しています。
 
 選択したTypeScriptコンパイラで3回測定し、入力規模・生成ファイルのサイズ・実行時間・コンパイラの診断情報をJSONで出力します。一時ファイルは終了時に削除します。測定値は環境によって変わるため、CIに固定の時間制限は設けていません。

@@ -5,7 +5,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkTypes } from '../test/helpers/type-compiler.mjs';
-import { generateTypes } from '../src/generate.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const temporary = await mkdtemp(join(tmpdir(), 'microcms package check-'));
@@ -14,17 +13,19 @@ const run = (command, args, cwd = temporary, env = process.env) =>
 try {
   // Use a temporary npm cache so this check does not depend on a user's cache.
   const npmEnv = { ...process.env, npm_config_cache: join(temporary, 'npm-cache') };
-  const [packed] = JSON.parse(run('npm', ['pack', '--json', '--pack-destination', temporary, '--ignore-scripts'], root, npmEnv));
+  const [packed] = JSON.parse(run('npm', ['pack', '--json', '--pack-destination', temporary], root, npmEnv));
+  const { generateTypes } = await import('../dist/generate.js');
   const files = packed.files.map(file => file.path);
-  for (const required of ['LICENSE', 'src/cli.js', 'src/config.d.ts', 'src/generate.js', 'src/management.js', 'microcms-typegen.config.example.ts']) {
+  for (const required of ['LICENSE', 'dist/cli.js', 'dist/config.d.ts', 'dist/generate.js', 'dist/management.js', 'microcms-typegen.config.example.ts']) {
     assert.ok(files.includes(required), `Package is missing ${required}`);
   }
   for (const file of files) {
-    assert.ok(/^(src\/|microcms-typegen\.config\.example\.ts$|package\.json$|README\.md$|LICENSE$)/.test(file), `Unexpected package file: ${file}`);
+    assert.ok(/^(dist\/|microcms-typegen\.config\.example\.ts$|package\.json$|README\.md$|LICENSE$)/.test(file), `Unexpected package file: ${file}`);
+    if (file.startsWith('dist/')) assert.match(file, /\.(?:js|d\.ts)$/, `Unexpected build artifact: ${file}`);
   }
   await writeFile(join(temporary, 'package.json'), JSON.stringify({ private: true, type: 'module' }));
   run('npm', ['install', join(temporary, packed.filename), '--offline', '--ignore-scripts', '--no-audit', '--no-fund'], temporary, npmEnv);
-  const cli = join(temporary, 'node_modules/microcms-typegen/src/cli.js');
+  const cli = join(temporary, 'node_modules/microcms-typegen/dist/cli.js');
   assert.match(run('npm', ['exec', '--offline', '--', 'microcms-typegen', '--help'], temporary, npmEnv), /Usage: microcms-typegen/);
   assert.match(run('npm', ['exec', '--offline', '--', 'microcms-typegen', 'init'], temporary, npmEnv), /Created microcms-typegen.config.ts/);
   const configPath = join(temporary, 'microcms-typegen.config.ts');

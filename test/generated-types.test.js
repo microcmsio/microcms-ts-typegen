@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { generateTypes } from '../src/generate.js';
+import { generateTypes } from '../dist/generate.js';
 import { compilerBinary } from './helpers/type-compiler.mjs';
 
 const tsc = compilerBinary();

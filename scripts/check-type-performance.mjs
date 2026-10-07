@@ -3,7 +3,7 @@ import { tmpdir, platform, arch, cpus } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { performance } from 'node:perf_hooks';
-import { generateTypes } from '../src/generate.js';
+import { generateTypes } from '../dist/generate.js';
 import { compilerBinary } from '../test/helpers/type-compiler.mjs';
 
 const fixture = JSON.parse(await readFile(new URL('../examples/schemas.json', import.meta.url), 'utf8'));

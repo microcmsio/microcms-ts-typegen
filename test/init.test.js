@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const cli = fileURLToPath(new URL('../src/cli.js', import.meta.url));
+const cli = fileURLToPath(new URL('../dist/cli.js', import.meta.url));
 
 test('init creates only a usable config and preserves existing project files', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'microcms-typegen-init-'));

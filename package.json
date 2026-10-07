@@ -4,22 +4,26 @@
   "description": "Generate TypeScript content types from microCMS Management API schemas",
   "license": "Apache-2.0",
   "type": "module",
-  "types": "./src/config.d.ts",
+  "types": "./dist/config.d.ts",
   "exports": {
     ".": {
-      "types": "./src/config.d.ts"
+      "types": "./dist/config.d.ts"
     }
   },
   "bin": {
-    "microcms-typegen": "./src/cli.js"
+    "microcms-typegen": "./dist/cli.js"
   },
   "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "pretest": "npm run build",
+    "pretest:types": "npm run build",
+    "prepack": "npm run build",
     "test": "node --test test/*.test.js",
     "test:types": "node scripts/check-typescript.mjs",
     "test:package": "node scripts/check-package.mjs",
-    "typegen": "node ./src/cli.js generate",
-    "typegen:check": "node ./src/cli.js check",
-    "test:performance": "node scripts/check-type-performance.mjs"
+    "typegen": "npm run build && node ./dist/cli.js generate",
+    "typegen:check": "npm run build && node ./dist/cli.js check",
+    "test:performance": "npm run build && node scripts/check-type-performance.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.5",
@@ -29,7 +33,7 @@
     "node": ">=22.18"
   },
   "files": [
-    "src",
+    "dist",
     "microcms-typegen.config.example.ts"
   ]
 }
