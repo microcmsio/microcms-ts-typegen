@@ -5,7 +5,7 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { generateTypes } from '../dist/generate.js';
-import { compilerBinary } from './helpers/type-compiler.mjs';
+import { checkTypes, compilerBinary } from './helpers/type-compiler.mjs';
 
 const tsc = compilerBinary();
 
@@ -19,33 +19,55 @@ test('generated types compile and model relation depth and object metadata', asy
         { endpoint: 'settings', type: 'object' },
       ],
       new Map([
-        ['blogs', {
-          apiFields: [
-            { fieldId: 'title', kind: 'text' },
-            { fieldId: 'category', kind: 'relation', referencedApiEndpoint: 'categories' },
-            { fieldId: 'blocks', kind: 'repeater', customFieldIds: ['text-block'] },
-            { fieldId: 'coverImage', kind: 'media' },
-            { fieldId: 'extension', kind: 'iframe' },
-            { fieldId: 'views', kind: 'number' },
-            { fieldId: 'active', kind: 'boolean' },
-          ],
-          customFields: [
-            { fieldId: 'text-block', fields: [{ fieldId: 'body', kind: 'richEditorV2' }] },
-          ],
-        }],
-        ['categories', {
-          apiFields: [{ fieldId: 'name', kind: 'text' }],
-          customFields: [],
-        }],
-        ['settings', {
-          apiFields: [{ fieldId: 'siteName', kind: 'text' }],
-          customFields: [],
-        }],
+        [
+          'blogs',
+          {
+            apiFields: [
+              { fieldId: 'title', kind: 'text' },
+              {
+                fieldId: 'category',
+                kind: 'relation',
+                referencedApiEndpoint: 'categories',
+              },
+              {
+                fieldId: 'blocks',
+                kind: 'repeater',
+                customFieldIds: ['text-block'],
+              },
+              { fieldId: 'coverImage', kind: 'media' },
+              { fieldId: 'extension', kind: 'iframe' },
+              { fieldId: 'views', kind: 'number' },
+              { fieldId: 'active', kind: 'boolean' },
+            ],
+            customFields: [
+              {
+                fieldId: 'text-block',
+                fields: [{ fieldId: 'body', kind: 'richEditorV2' }],
+              },
+            ],
+          },
+        ],
+        [
+          'categories',
+          {
+            apiFields: [{ fieldId: 'name', kind: 'text' }],
+            customFields: [],
+          },
+        ],
+        [
+          'settings',
+          {
+            apiFields: [{ fieldId: 'siteName', kind: 'text' }],
+            customFields: [],
+          },
+        ],
       ]),
       { serviceName: 'main' },
     );
     await writeFile(join(directory, 'generated.ts'), generated);
-    await writeFile(join(directory, 'usage.ts'), `
+    await writeFile(
+      join(directory, 'usage.ts'),
+      `
 import type { Blogs, BlogsCustomFieldTextBlock, Categories, Settings, MainServiceSchema } from './generated';
 
 type Assert<T extends true> = T;
@@ -83,48 +105,87 @@ type _NoCreateId = Assert<Equal<'id' extends keyof BlogCreate ? true : false, fa
 
 const nestedField: MainServiceSchema['blogs']['fieldPaths'] = 'category.name';
 void nestedField;
-`);
-    const result = spawnSync(process.execPath, [
-      tsc,
-      '--ignoreConfig',
-      '--noEmit',
-      '--strict',
-      '--target', 'ES2022',
-      '--module', 'ESNext',
-      '--moduleResolution', 'Bundler',
-      join(directory, 'generated.ts'),
-      join(directory, 'usage.ts'),
-    ], { encoding: 'utf8' });
-    assert.equal(result.status, 0, [result.stdout, result.stderr, result.error?.message].filter(Boolean).join('\n'));
+`,
+    );
+    const result = spawnSync(
+      process.execPath,
+      [
+        tsc,
+        '--ignoreConfig',
+        '--noEmit',
+        '--strict',
+        '--target',
+        'ES2022',
+        '--module',
+        'ESNext',
+        '--moduleResolution',
+        'Bundler',
+        join(directory, 'generated.ts'),
+        join(directory, 'usage.ts'),
+      ],
+      { encoding: 'utf8' },
+    );
+    assert.equal(
+      result.status,
+      0,
+      [result.stdout, result.stderr, result.error?.message]
+        .filter(Boolean)
+        .join('\n'),
+    );
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
 });
 
 test('extension data types derive reads and write inputs for top-level and custom fields', async () => {
-  const directory = await mkdtemp(join(tmpdir(), 'microcms-typegen-extension-types-'));
+  const directory = await mkdtemp(
+    join(tmpdir(), 'microcms-typegen-extension-types-'),
+  );
   try {
     const generated = generateTypes(
       [{ endpoint: 'blog', type: 'list' }],
-      new Map([['blog', {
-        apiFields: [
-          { fieldId: 'extension', kind: 'iframe' },
-          { fieldId: 'featuredPanel', kind: 'custom', customFieldId: 'panel' },
+      new Map([
+        [
+          'blog',
+          {
+            apiFields: [
+              { fieldId: 'extension', kind: 'iframe' },
+              {
+                fieldId: 'featuredPanel',
+                kind: 'custom',
+                customFieldId: 'panel',
+              },
+            ],
+            customFields: [
+              {
+                fieldId: 'panel',
+                fields: [{ fieldId: 'embed', kind: 'iframe' }],
+              },
+            ],
+          },
         ],
-        customFields: [{ fieldId: 'panel', fields: [{ fieldId: 'embed', kind: 'iframe' }] }],
-      }]]),
-      { extensionFieldTypes: { blog: {
-        extension: { from: './config', data: 'ReadExtension' },
-        'panel.embed': { from: './config', data: 'ReadEmbed' },
-      } } },
+      ]),
+      {
+        extensionFieldTypes: {
+          blog: {
+            extension: { from: './config', data: 'ReadExtension' },
+            'panel.embed': { from: './config', data: 'ReadEmbed' },
+          },
+        },
+      },
     );
     await writeFile(join(directory, 'generated.ts'), generated);
-    await writeFile(join(directory, 'config.ts'), `
+    await writeFile(
+      join(directory, 'config.ts'),
+      `
 export type ReadExtension = { id: string };
 export type ReadEmbed = { html: string };
 export default { services: { main: { extensionFieldTypes: {} } } };
-`);
-    await writeFile(join(directory, 'usage.ts'), `
+`,
+    );
+    await writeFile(
+      join(directory, 'usage.ts'),
+      `
 import type { MainServiceSchema, Blog } from './generated';
 import type { ReadExtension, ReadEmbed } from './config';
 type Assert<T extends true> = T;
@@ -152,20 +213,70 @@ const invalidData: NonNullable<Entry['create']['extension']> = { data: { id: 123
 // @ts-expect-error metadata keys are checked
 const invalidMetadata: NonNullable<Entry['create']['extension']> = { title: 123 };
 void [valid, invalidData, invalidMetadata];
-`);
-    const result = spawnSync(process.execPath, [
-      tsc,
-      '--ignoreConfig',
-      '--noEmit',
-      '--strict',
-      '--target', 'ES2022',
-      '--module', 'ESNext',
-      '--moduleResolution', 'Bundler',
-      join(directory, 'generated.ts'),
-      join(directory, 'usage.ts'),
-    ], { encoding: 'utf8' });
-    assert.equal(result.status, 0, [result.stdout, result.stderr, result.error?.message].filter(Boolean).join('\n'));
+`,
+    );
+    const result = spawnSync(
+      process.execPath,
+      [
+        tsc,
+        '--ignoreConfig',
+        '--noEmit',
+        '--strict',
+        '--target',
+        'ES2022',
+        '--module',
+        'ESNext',
+        '--moduleResolution',
+        'Bundler',
+        join(directory, 'generated.ts'),
+        join(directory, 'usage.ts'),
+      ],
+      { encoding: 'utf8' },
+    );
+    assert.equal(
+      result.status,
+      0,
+      [result.stdout, result.stderr, result.error?.message]
+        .filter(Boolean)
+        .join('\n'),
+    );
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+test('escaped property names and select values produce compilable TypeScript', async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'microcms-typegen-escaping-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const output = generateTypes(
+    [{ endpoint: '123-blog', type: 'list' }],
+    new Map([
+      [
+        '123-blog',
+        {
+          customFields: [],
+          apiFields: [
+            { fieldId: 'quote"field', kind: 'text' },
+            {
+              fieldId: 'select-values',
+              kind: 'select',
+              selectItems: [
+                { value: 'A"B' },
+                { value: 'line\nbreak' },
+                { value: 'A"B' },
+              ],
+            },
+          ],
+        },
+      ],
+    ]),
+  );
+  const generated = join(directory, 'types.ts');
+  await writeFile(generated, output);
+  const consumer = join(directory, 'consumer.ts');
+  await writeFile(
+    consumer,
+    `import type { _123Blog } from './types';\nconst item: _123Blog = { id: 'id', createdAt: '', updatedAt: '', 'quote"field': null, 'select-values': ['A"B', 'line\\nbreak'] };\n// @ts-expect-error Undeclared select value\nconst invalid: _123Blog['select-values'] = ['Other'];\n`,
+  );
+  checkTypes([generated, consumer], ['--exactOptionalPropertyTypes']);
 });

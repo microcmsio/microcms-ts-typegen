@@ -15,10 +15,30 @@ export function compilerBinary() {
 }
 
 export function checkTypes(files, options = []) {
-  const result = spawnSync(process.execPath, [compilerBinary(),
-    '--ignoreConfig', '--pretty', 'false', '--noEmit', '--strict',
-    '--target', 'ES2022', '--module', 'ESNext', '--moduleResolution', 'Bundler',
-    ...options, ...files,
-  ], { encoding: 'utf8', timeout: 60000 });
-  if (result.status !== 0) throw new Error([result.stdout, result.stderr, result.error?.message].filter(Boolean).join('\n'));
+  const result = spawnSync(
+    process.execPath,
+    [
+      compilerBinary(),
+      '--ignoreConfig',
+      '--pretty',
+      'false',
+      '--noEmit',
+      '--strict',
+      '--target',
+      'ES2022',
+      '--module',
+      'ESNext',
+      '--moduleResolution',
+      'Bundler',
+      ...options,
+      ...files,
+    ],
+    { encoding: 'utf8', timeout: 60000 },
+  );
+  if (result.status !== 0)
+    throw new Error(
+      [result.stdout, result.stderr, result.error?.message]
+        .filter(Boolean)
+        .join('\n'),
+    );
 }

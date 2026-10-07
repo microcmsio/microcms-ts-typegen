@@ -11,9 +11,11 @@ const cli = fileURLToPath(new URL('../dist/cli.js', import.meta.url));
 test('init creates only a usable config and preserves existing project files', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'microcms-typegen-init-'));
   try {
-    const invoke = (...args) => spawnSync(process.execPath, [cli, 'init', ...args], {
-      cwd: directory, encoding: 'utf8',
-    });
+    const invoke = (...args) =>
+      spawnSync(process.execPath, [cli, 'init', ...args], {
+        cwd: directory,
+        encoding: 'utf8',
+      });
     const help = invoke('--help');
     assert.equal(help.status, 0);
     assert.deepEqual(await readdir(directory), []);
@@ -38,15 +40,28 @@ test('init creates only a usable config and preserves existing project files', a
     assert.match(config, /serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN/);
     assert.match(config, /apiKey: process.env.MICROCMS_API_INFO_API_KEY/);
     assert.doesNotMatch(config, /endpoints|extensionFieldTypes/);
-    assert.deepEqual((await readdir(directory)).sort(), ['.env', '.gitignore', 'microcms-typegen.config.ts']);
-    assert.equal(await readFile(join(directory, '.env'), 'utf8'), 'EXISTING=value\n');
-    assert.equal(await readFile(join(directory, '.gitignore'), 'utf8'), '.env\n');
+    assert.deepEqual((await readdir(directory)).sort(), [
+      '.env',
+      '.gitignore',
+      'microcms-typegen.config.ts',
+    ]);
+    assert.equal(
+      await readFile(join(directory, '.env'), 'utf8'),
+      'EXISTING=value\n',
+    );
+    assert.equal(
+      await readFile(join(directory, '.gitignore'), 'utf8'),
+      '.env\n',
+    );
 
     // Even an empty existing config must be preserved.
     await writeFile(path, '');
     const skipped = invoke();
     assert.equal(skipped.status, 0, skipped.stderr);
-    assert.match(skipped.stdout, /Skipped microcms-typegen.config.ts: already exists/);
+    assert.match(
+      skipped.stdout,
+      /Skipped microcms-typegen.config.ts: already exists/,
+    );
     assert.equal(await readFile(path, 'utf8'), '');
   } finally {
     await rm(directory, { recursive: true, force: true });

@@ -1,0 +1,6 @@
+/dist/
+/coverage/
+/examples/microcms-types.ts
+/examples/schemas.json
+/examples/README.md
+/test/fixtures/

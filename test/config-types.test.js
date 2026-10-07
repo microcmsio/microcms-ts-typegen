@@ -5,12 +5,15 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { compilerBinary } from './helpers/type-compiler.mjs';
 
-
 test('public Config supports environment inputs and catches configuration mistakes', async () => {
-  const directory = await mkdtemp(new URL('../.config-type-test-', import.meta.url));
+  const directory = await mkdtemp(
+    new URL('../.config-type-test-', import.meta.url),
+  );
   try {
     const usage = join(directory, 'usage.ts');
-    await writeFile(usage, `
+    await writeFile(
+      usage,
+      `
 import type { Config, ServiceConfig } from 'microcms-typegen';
 const config = {
   services: {
@@ -55,14 +58,28 @@ const incompleteExtension: ServiceConfig = {
   } },
 };
 void [config, missingKey, wrongOutput, wrongOption, wrongEndpoints, incompleteExtension];
-`);
-    const result = spawnSync(process.execPath, [
-      compilerBinary(), '--ignoreConfig',
-      '--noEmit', '--strict', '--exactOptionalPropertyTypes',
-      '--types', 'node',
-      '--target', 'ES2022', '--module', 'ESNext', '--moduleResolution', 'Bundler',
-      usage,
-    ], { encoding: 'utf8' });
+`,
+    );
+    const result = spawnSync(
+      process.execPath,
+      [
+        compilerBinary(),
+        '--ignoreConfig',
+        '--noEmit',
+        '--strict',
+        '--exactOptionalPropertyTypes',
+        '--types',
+        'node',
+        '--target',
+        'ES2022',
+        '--module',
+        'ESNext',
+        '--moduleResolution',
+        'Bundler',
+        usage,
+      ],
+      { encoding: 'utf8' },
+    );
     assert.equal(result.status, 0, [result.stdout, result.stderr].join('\n'));
   } finally {
     await rm(directory, { recursive: true, force: true });

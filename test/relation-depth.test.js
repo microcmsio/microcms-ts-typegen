@@ -6,11 +6,23 @@ import { generateTypes } from '../dist/generate.js';
 import { checkTypes } from './helpers/type-compiler.mjs';
 
 test('generated multi-level and cyclic references preserve depth boundaries and field paths', async () => {
-  const fixture = JSON.parse(await readFile(new URL('./fixtures/tree-schema.json', import.meta.url), 'utf8'));
+  const fixture = JSON.parse(
+    await readFile(
+      new URL('./fixtures/tree-schema.json', import.meta.url),
+      'utf8',
+    ),
+  );
   const directory = await mkdtemp(join(tmpdir(), 'microcms-depth-matrix-'));
   try {
-    await writeFile(join(directory, 'generated.ts'), generateTypes(fixture.apis, new Map(Object.entries(fixture.schemas)), { serviceName: 'tree' }));
-    await writeFile(join(directory, 'usage.ts'), `import type { TreeServiceSchema } from './generated';
+    await writeFile(
+      join(directory, 'generated.ts'),
+      generateTypes(fixture.apis, new Map(Object.entries(fixture.schemas)), {
+        serviceName: 'tree',
+      }),
+    );
+    await writeFile(
+      join(directory, 'usage.ts'),
+      `import type { TreeServiceSchema } from './generated';
 type Assert<T extends true> = T;
 type Equal<A, B> = [A] extends [B] ? [B] extends [A] ? true : false : false;
 type Parent<Value> = Value extends { parent: infer P } ? NonNullable<P> : never;
@@ -31,7 +43,8 @@ type NestedPath = Assert<Equal<'parent.parent.parent.title' extends TreeServiceS
 type CutoffPath = Assert<Equal<'parent.parent.parent.parent.id' extends TreeServiceSchema['nodes']['fieldPaths'] ? true : false, true>>;
 type InvalidPath = Assert<Equal<'parent.parent.parent.parent.title' extends TreeServiceSchema['nodes']['fieldPaths'] ? true : false, false>>;
 type ObjectMetadata = Assert<Equal<'id' extends keyof TreeServiceSchema['settings']['content'] ? true : false, false>>;
-`);
+`,
+    );
     checkTypes([join(directory, 'usage.ts')], ['--exactOptionalPropertyTypes']);
   } finally {
     await rm(directory, { recursive: true, force: true });

@@ -17,6 +17,19 @@ npm run build
 
 ## テスト
 
+### Lint・フォーマット
+
+SDKと同じOxlint・Prettierを使用します。実装・テスト・検証スクリプト・設定例を対象に、SDKと共通のLintルールと、セミコロンあり・シングルクォートのフォーマット設定を適用します。型検査はTypeScriptで別途行います。生成済みの型や保存済みのJSONスキーマは手動で整形しません。
+
+```sh
+npm run lint
+npm run format
+```
+
+自動修正は`npm run lint:fix`、`npm run format:fix`です。
+
+### ユニットテスト・型検査
+
 ```sh
 npm test
 ```
@@ -32,6 +45,20 @@ npm run test:types
 ビルドには開発用の`tsc`を使います。`test:types`も最初にビルドしてから、選択したコンパイラで実装・設定例・生成サンプルを型検査し、設定型と生成型のテストを実行します。CIではTypeScript6.0.2を別の一時ディレクトリへインストールし、同じ型検査とインストールしたパッケージの互換性を確認します。ローカルの依存関係には6系を含めません。
 
 テスト・パッケージ確認・性能測定で使うコンパイラを切り替える場合は、`MICROCMS_TYPESCRIPT_BINARY`にCLIの絶対パスを指定します。この指定は`npx tsc`やエディタが使うTypeScriptのバージョンには影響しません。
+
+### カバレッジ
+
+```sh
+npm run test:coverage
+```
+
+c8でCLIの子プロセスを含む実行時のカバレッジを計測します。このコマンドではインラインソースマップ付きでビルドし、レポートを`src/`のTypeScriptへ対応付けます。通常のビルドとnpm配布にはソースマップを含めません。
+
+`coverage/index.html`でファイルごとの未実行箇所を確認できます。LCOVは`coverage/lcov.info`、集計JSONは`coverage/coverage-summary.json`です。未実行の実装ファイルも集計し、実行処理を持たない型定義のみの`config.ts`・`schema.ts`と、生成したコンテンツ型は集計しません。
+
+`.c8rc.json`でファイルごとに行・文98%、分岐95%、関数100%を下限に設定し、下回る場合はコマンドとCIを失敗させます。カバレッジは実行された処理を示す指標であり、生成型の正しさは出力の照合とTypeScriptのコンパイルで別途検証します。
+
+設定・CLIのエラーとファイル保護は`test/cli.test.js`、マネジメントAPIの入力・レスポンス・HTTPエラー・再試行間隔は`test/management.test.js`、型生成の不正スキーマ・名前・参照は`test/generate-validation.test.js`で追加検証します。文字列のエスケープは`test/generated-types.test.js`で生成結果をTypeScript6・7の両方でコンパイルします。通信は注入した`fetchImpl`でモックし、再試行・リクエスト間隔の検証では時計・タイマーを制御します。実サービスへのアクセスは不要です。
 
 ### SDKとの責務分担
 
@@ -57,6 +84,8 @@ SDKの利用例・連携テスト・SDKを使った性能測定はSDKリポジ�
 ## CI
 
 [GitHub Actionsの設定](.github/workflows/ci.yml)は`main`へのpush・pull requestと手動実行に対応しています。Node.js22.18.0（対応下限）・22系・24系でテスト、開発用TypeScriptでの型チェック、npmパッケージの確認を実行します。別ジョブでTypeScript6.0.2を使い、設定型・生成型とインストールしたnpmパッケージの互換性を同じ手順で検査します。
+
+別ジョブでLint・フォーマットを検査します。各Node.jsのテストでカバレッジの下限を検査し、HTML・LCOV・集計JSONをActionsのartifactへ14日間保存します。テスト失敗時も生成済みのレポートを保存します。
 
 ## publish前のパッケージ確認
 
