@@ -11,6 +11,12 @@ npm ci
 npm run build
 ```
 
+依存関係のインストールには、SDKと同じ`.npmrc`設定を適用します。
+
+- `engine-strict=true`：依存パッケージの動作環境を満たさない場合はインストールを失敗させます。
+- `min-release-age=7`：バージョンの解決時に、公開から7日未満のバージョンを除外します。この設定に対応したnpmが必要です。
+- `registry=https://npm.flatt.tech`：SDKと同じレジストリを使用します。
+
 実装は`src/`のTypeScriptです。`npm run build`で`tsconfig.build.json`に従ってJavaScriptと型定義を`dist/`へ生成します。npmには`dist/`と設定例を含め、CLIは`dist/cli.js`を実行します。利用者側でのビルドやTypeScriptのインストールは不要です。
 
 設定ファイルの`process.env`には、開発依存関係の`@types/node`を使用します。ルートの`tsconfig.json`でNode.jsの型を読み込み、実装・設定例・`examples/`をエディタと`npm run test:types`で型検査します。
