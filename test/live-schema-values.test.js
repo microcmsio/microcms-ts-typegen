@@ -13,6 +13,7 @@ const fixture = JSON.parse(
 const values = 'typegen_matrix_values';
 const nested = 'typegen_matrix_nested';
 const object = 'typegen_matrix_object';
+const uiExtension = 'typegen_matrix_ui_extension';
 function response(id) {
   const captured = fixture.reads.find((item) => item.id === id);
   assert.ok(captured, `Missing captured response ${id}`);
@@ -152,6 +153,103 @@ test('object-format responses have timestamps without a content ID, including ne
   }
 });
 
+test('management UI clearing omits scalar keys while preserving empty arrays and references', () => {
+  const filled = response('ui-values-filled-depth-1');
+  assert.equal(filled.text, 'UI text');
+  assert.equal(filled.textArea, 'UI first\nUI second');
+  assert.equal(filled.legacyHtml, '<p>UI legacy rich text</p>');
+  assert.equal(filled.html, '<p>UI rich text</p>');
+  assert.equal(filled.number, 42);
+  assert.equal(filled.boolean, true);
+  assert.equal(filled.date, '2026-10-08T00:00:00.000Z');
+  assert.deepEqual(filled.singleSelect, ['One']);
+  assert.deepEqual(filled.multiSelect, ['One', 'Two']);
+  assert.equal(filled.image.width, 600);
+  assert.equal(filled.images.length, 1);
+  assert.equal(filled.file.fileSize, 20247);
+  assert.equal(filled.related.id, 'typegen-matrix-blog');
+  assert.deepEqual(filled.relatedMany, [filled.related]);
+  for (const phase of ['initially-empty', 'cleared']) {
+    for (const depth of [0, 1, 2, 3]) {
+      const content = response(`ui-values-${phase}-depth-${depth}`);
+      for (const key of [
+        'text',
+        'textArea',
+        'legacyHtml',
+        'html',
+        'number',
+        'date',
+        'image',
+        'file',
+        'extension',
+      ]) {
+        assert.equal(
+          Object.hasOwn(content, key),
+          false,
+          `${phase}: ${key} is omitted`,
+        );
+      }
+      assert.equal(content.boolean, false);
+      assert.equal(content.related, null);
+      for (const key of [
+        'images',
+        'singleSelect',
+        'multiSelect',
+        'relatedMany',
+      ])
+        assert.deepEqual(content[key], []);
+    }
+  }
+  // PATCH resets return null (or an empty legacy HTML string), unlike UI clearing.
+  assert.equal(response('scalar-reset-depth-1').text, null);
+  assert.equal(response('scalar-reset-depth-1').legacyHtml, '');
+});
+
+test('management UI preserves three repeater levels and clears their leaf values', () => {
+  for (const depth of [0, 1, 2, 3]) {
+    const filled = response(`ui-nested-filled-depth-${depth}`);
+    const items = leaves(filled);
+    assert.deepEqual(items[0], {
+      fieldId: 'textBlock',
+      text: 'UI nested text',
+      number: 0,
+      boolean: true,
+    });
+    assert.equal(items[1].label, 'UI nested reference');
+    assert.deepEqual(items[1].choices, ['One', 'Two']);
+    assert.deepEqual(items[1].targets, [items[1].target]);
+    const target = items[1].target;
+    if (depth === 0) assert.deepEqual(target, { id: 'typegen-matrix-filled' });
+    if (depth === 1)
+      assert.deepEqual(target.related, { id: 'typegen-matrix-blog' });
+    if (depth === 2)
+      assert.deepEqual(target.related.category, {
+        id: 'typegen-matrix-category',
+      });
+    if (depth === 3)
+      assert.equal(target.related.category.name, 'Typegen matrix category');
+    assert.deepEqual(
+      leaves(response(`ui-nested-leaves-cleared-depth-${depth}`)),
+      [
+        { fieldId: 'textBlock', boolean: false },
+        { fieldId: 'linkBlock', target: null, targets: [], choices: [] },
+      ],
+    );
+    for (const phase of ['initially-empty', 'cleared']) {
+      const content = response(`ui-nested-${phase}-depth-${depth}`);
+      assert.deepEqual(content.details, { fieldId: 'section', children: [] });
+      assert.deepEqual(content.blocks, []);
+    }
+    assert.equal(
+      Object.hasOwn(
+        response(`ui-extension-initially-empty-depth-${depth}`),
+        'extension',
+      ),
+      false,
+    );
+  }
+});
+
 test('captured schemas generate types that accept real reads and writes and reject invalid nested inputs', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'microcms-live-type-matrix-'));
   try {
@@ -169,20 +267,41 @@ test('captured schemas generate types that accept real reads and writes and reje
         return { ok: true, json: async () => structuredClone(payload) };
       },
     });
-    const generated = await collectSchemas(client, [nested, object], {
-      serviceName: 'verification',
-      extensionFieldTypes: {
-        [values]: { extension: { from: './extension', data: 'ExtensionData' } },
-        [nested]: {
-          'textBlock.extension': { from: './extension', data: 'ExtensionData' },
-          'linkBlock.extension': { from: './extension', data: 'ExtensionData' },
-        },
-        [object]: {
-          'textBlock.extension': { from: './extension', data: 'ExtensionData' },
-          'linkBlock.extension': { from: './extension', data: 'ExtensionData' },
+    const generated = await collectSchemas(
+      client,
+      [nested, object, uiExtension],
+      {
+        serviceName: 'verification',
+        extensionFieldTypes: {
+          [uiExtension]: {
+            extension: { from: './extension', data: 'ExtensionData' },
+          },
+          [values]: {
+            extension: { from: './extension', data: 'ExtensionData' },
+          },
+          [nested]: {
+            'textBlock.extension': {
+              from: './extension',
+              data: 'ExtensionData',
+            },
+            'linkBlock.extension': {
+              from: './extension',
+              data: 'ExtensionData',
+            },
+          },
+          [object]: {
+            'textBlock.extension': {
+              from: './extension',
+              data: 'ExtensionData',
+            },
+            'linkBlock.extension': {
+              from: './extension',
+              data: 'ExtensionData',
+            },
+          },
         },
       },
-    });
+    );
     await writeFile(join(directory, 'generated.ts'), generated);
     await writeFile(
       join(directory, 'extension.ts'),

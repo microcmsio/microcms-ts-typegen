@@ -87,7 +87,7 @@ SDKの利用例・連携テスト・SDKを使った性能測定はSDKリポジ�
 
 ### 実APIによる型生成の確認
 
-[`test/fixtures/live-type-matrix.json`](test/fixtures/live-type-matrix.json)は、2026年10月8日にtypegenサービスのマネジメントAPIから取得した5APIのスキーマと、コンテンツAPIの56件の取得レスポンス・18件の成功した書き込み入力・3件の400エラーの記録です。検証用API・コンテンツを追加して確認し、既存コンテンツは変更していません。画像・ファイルのURLは`example.com`へ置き換えています。
+[`test/fixtures/live-type-matrix.json`](test/fixtures/live-type-matrix.json)は、2026年10月8日にtypegenサービスのマネジメントAPIから取得した6APIのスキーマと、コンテンツAPIの88件の取得レスポンス・18件の成功した書き込み入力・3件の400エラーの記録です。取得レスポンスのうち32件は、管理画面で入力・公開したコンテンツをGETしたものです（`inputMethod: "management-ui"`）。検証用API・コンテンツを追加して確認し、既存コンテンツは変更していません。画像・ファイルのURLと拡張フィールドの入力UIのURLは`example.com`へ置き換えています。
 
 [`test/live-schema-values.test.js`](test/live-schema-values.test.js)は、このスキーマから型を生成し、保存したレスポンスと書き込み入力をTypeScriptで照合します。APIで拒否されたネスト入力が型エラーになることも検査します。通常のテストでは通信や書き込みを実行せず、APIキーも不要です。
 
@@ -97,13 +97,16 @@ SDKの利用例・連携テスト・SDKを使った性能測定はSDKリポジ�
 | 参照の深さ | `depth: 0`〜`3`。単一・複数参照を3API経由で取得し、カスタム・繰り返しの階層が参照の深さを消費しないことを確認 |
 | 繰り返しの3段ネスト | 複数種類の要素、空配列、要素内の省略・空値、参照、拡張データ。`fieldId`による型の絞り込みと不正な値・種類の拒否 |
 | 作成・更新 | リスト形式のPUT、リスト・オブジェクト形式のPATCH。部分更新による他フィールドの保持、空値への更新、値の復元 |
+| 管理画面の入力・クリア | 通常フィールドの初期空値・値あり・クリア後。3段ネスト内の文字列・数値・真偽値・単一／複数参照・選択肢を入力後にクリアし、繰り返し項目全体を削除。各状態を`depth: 0`〜`3`で取得 |
 | オブジェクト形式 | 共通日時は返り、`id`は返らないこと。ネストを含む取得・更新。初回コンテンツは管理画面で公開してから検証 |
 
 空文字の返却は、フィールドの種類と位置によって`null`・空文字・省略に分かれます。また、値ありのカスタムフィールドを`{}`で更新すると、今回の構造では`fieldId`と`children: null`が残りました。読み取り型はこうした空値・省略を許容し、テストでは取得時の実際の違いも確認します。拡張フィールドは、書き込み時のメタデータ付き入力に対し、読み取りでは`data`の内容だけが返ることを照合しています。
 
-この記録でAPI仕様全体の網羅を保証するものではありません。必須設定ごとの保存制約、リッチエディタのobject形式、削除済み・非公開の参照、あらゆる階層・フィールドの組み合わせは、この実API検証の対象外です。循環参照とSDKの`fields`指定は別の回帰テストで検査します。
+管理画面でクリアしたテキスト・旧／新リッチエディタ・数値は、PATCHでの空値更新と異なりキーが省略されました。3段ネストの末端でも、文字列・数値のキーは省略、真偽値は`false`、単一参照は`null`、複数参照・選択肢は`[]`でした。初期空値と全体クリア後のカスタムフィールドは`{ fieldId: "section", children: [] }`、繰り返しフィールドは`[]`でした。拡張フィールドは管理画面での未入力時の省略を確認しましたが、ローカル入力UIがアプリ内ブラウザのiframeに表示されなかったため、管理画面で一度入力してからクリアするケースは未確認です。
 
-仕様は公式ドキュメントの[繰り返しフィールド](https://document.microcms.io/manual/repeat-field)、[カスタムフィールド](https://document.microcms.io/manual/custom-field)、[コンテンツ更新](https://document.microcms.io/content-api/patch-content)も参照してください。
+この記録でAPI仕様全体の網羅を保証するものではありません。POST・CSVからの入力、既存APIへのフィールド追加時の空値、必須設定ごとの保存制約、リッチエディタのobject形式、削除済み・非公開の参照、あらゆる階層・フィールドの組み合わせは、この実API検証の対象外です。循環参照とSDKの`fields`指定は別の回帰テストで検査します。
+
+仕様は公式ドキュメントの[空値と入力方法ごとの返却値](https://document.microcms.io/content-api/get-api-field-responses#hf57c580171)、[繰り返しフィールド](https://document.microcms.io/manual/repeat-field)、[カスタムフィールド](https://document.microcms.io/manual/custom-field)、[コンテンツ更新](https://document.microcms.io/content-api/patch-content)も参照してください。
 
 SDKによる推論と型抽出の検査には、SDK側の`tests/fixtures/typegen/generated/matrix.ts`と`matrix-usage.ts`を使用します。生成型をSDKに渡し、3段ネストの取得・選択・書き込みを検査します。
 
