@@ -6,6 +6,7 @@ const tests = [
   'generated-types',
   'relation-depth',
   'captured-schemas',
+  'live-schema-values',
 ].map((name) => `test/${name}.test.js`);
 const binary = compilerBinary();
 const version = spawnSync(process.execPath, [binary, '--version'], {

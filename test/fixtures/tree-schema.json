@@ -37,6 +37,13 @@
           "customFieldIds": [
             "branch"
           ]
+        },
+        {
+          "fieldId": "sections",
+          "kind": "repeater",
+          "customFieldIds": [
+            "section"
+          ]
         }
       ],
       "customFields": [
@@ -47,6 +54,49 @@
               "fieldId": "target",
               "kind": "relation",
               "referencedApiEndpoint": "nodes"
+            }
+          ]
+        },
+        {
+          "fieldId": "caption",
+          "fields": [
+            {
+              "fieldId": "text",
+              "kind": "text"
+            },
+            {
+              "fieldId": "count",
+              "kind": "number"
+            },
+            {
+              "fieldId": "visible",
+              "kind": "boolean"
+            }
+          ]
+        },
+        {
+          "fieldId": "group",
+          "fields": [
+            {
+              "fieldId": "items",
+              "kind": "repeater",
+              "customFieldIds": [
+                "branch",
+                "caption"
+              ]
+            }
+          ]
+        },
+        {
+          "fieldId": "section",
+          "fields": [
+            {
+              "fieldId": "groups",
+              "kind": "repeater",
+              "customFieldIds": [
+                "group",
+                "caption"
+              ]
             }
           ]
         }
