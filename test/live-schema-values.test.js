@@ -250,6 +250,94 @@ test('management UI preserves three repeater levels and clears their leaf values
   }
 });
 
+test('POST and CSV empty inputs agree with the captured PUT empty defaults', () => {
+  const csv = fixture.csvInputs.find(
+    (input) => input.id === 'csv-empty-nested',
+  );
+  assert.equal(csv.endpoint, nested);
+  assert.equal(csv.status, 'PUBLISH');
+  assert.deepEqual(
+    csv.columns.slice(1),
+    fixture.schemas[nested].apiFields.map((field) => field.fieldId),
+  );
+  const [[id, title, ...emptyCells]] = csv.rows;
+  assert.equal(id, csv.contentId);
+  assert.ok(emptyCells.every((cell) => cell === ''));
+  const imported = response('csv-empty-nested-depth-1');
+  assert.equal(imported.id, id);
+  assert.equal(imported.title, title);
+  const fields = (content) =>
+    Object.fromEntries(
+      Object.entries(content).filter(
+        ([key]) =>
+          ![
+            'id',
+            'title',
+            'createdAt',
+            'updatedAt',
+            'publishedAt',
+            'revisedAt',
+          ].includes(key),
+      ),
+    );
+  for (const depth of [0, 1, 2, 3]) {
+    assert.deepEqual(
+      fields(response(`post-empty-${values}-depth-${depth}`)),
+      fields(response(`${values}-omitted-depth-${depth}`)),
+    );
+    const omitted = fields(response(`${nested}-omitted-depth-${depth}`));
+    assert.deepEqual(
+      fields(response(`post-empty-${nested}-depth-${depth}`)),
+      omitted,
+    );
+    assert.deepEqual(
+      fields(response(`csv-empty-nested-depth-${depth}`)),
+      omitted,
+    );
+  }
+});
+
+test('an optional text field added to the schema is omitted on existing content before editing', () => {
+  const change = fixture.schemaChanges.find(
+    (item) => item.id === 'field-added-existing',
+  );
+  assert.equal(change.contentUpdated, false);
+  const field = fixture.schemas[change.endpoint].apiFields.find(
+    (item) => item.fieldId === 'addedText',
+  );
+  assert.deepEqual(field, change.addedField);
+  assert.equal(field.kind, 'text');
+  assert.equal(field.required, false);
+  assert.equal(field.initialValue, null);
+  for (const depth of [0, 1, 2, 3]) {
+    const content = response(`field-added-existing-depth-${depth}`);
+    assert.equal(content.id, change.contentId);
+    assert.equal(Object.hasOwn(content, 'addedText'), false);
+    assert.deepEqual(
+      content,
+      response(`ui-extension-initially-empty-depth-${depth}`),
+    );
+  }
+});
+
+test('closing the only referenced content returns null or empty arrays, including nested references', () => {
+  for (const depth of [0, 1, 2, 3]) {
+    for (const phase of ['published', 'restored']) {
+      const content = response(`single-reference-${phase}-depth-${depth}`);
+      assert.equal(typeof content.related.id, 'string');
+      assert.deepEqual(content.relatedMany, [content.related]);
+      assert.deepEqual(leaves(content)[0].target, content.related);
+      assert.deepEqual(leaves(content)[0].targets, [content.related]);
+    }
+    const closed = response(`single-reference-closed-depth-${depth}`);
+    assert.equal(closed.related, null);
+    assert.deepEqual(closed.relatedMany, []);
+    assert.deepEqual(leaves(closed), [
+      { fieldId: 'linkBlock', target: null, targets: [], choices: [] },
+    ]);
+  }
+});
+
 test('captured schemas generate types that accept real reads and writes and reject invalid nested inputs', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'microcms-live-type-matrix-'));
   try {

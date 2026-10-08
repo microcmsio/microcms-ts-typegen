@@ -823,6 +823,17 @@
           "description": null,
           "required": false,
           "iframeUrl": "https://example.com/typegen-ui-extension"
+        },
+        {
+          "fieldId": "addedText",
+          "name": "addedText",
+          "kind": "text",
+          "description": null,
+          "required": false,
+          "textSizeLimitValidation": null,
+          "patternMatchValidation": null,
+          "isUnique": false,
+          "initialValue": null
         }
       ],
       "customFields": []
@@ -1971,6 +1982,61 @@
       "result": {
         "id": "ad4fmrraa3"
       }
+    },
+    {
+      "id": "post-empty-typegen_matrix_values",
+      "endpoint": "typegen_matrix_values",
+      "operation": "create",
+      "httpMethod": "POST",
+      "content": {
+        "title": "Typegen POST empty typegen_matrix_values"
+      },
+      "contentId": "slyzv4szfg",
+      "status": 201
+    },
+    {
+      "id": "post-empty-typegen_matrix_nested",
+      "endpoint": "typegen_matrix_nested",
+      "operation": "create",
+      "httpMethod": "POST",
+      "content": {
+        "title": "Typegen POST empty typegen_matrix_nested"
+      },
+      "contentId": "sixhb2asyz",
+      "status": 201
+    },
+    {
+      "id": "single-reference-create",
+      "endpoint": "typegen_matrix_nested",
+      "operation": "create",
+      "httpMethod": "PUT",
+      "content": {
+        "title": "Typegen single reference visibility",
+        "related": "slyzv4szfg",
+        "relatedMany": [
+          "slyzv4szfg"
+        ],
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": "slyzv4szfg",
+                    "targets": [
+                      "slyzv4szfg"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "contentId": "typegen-smoke-reference"
     }
   ],
   "reads": [
@@ -14291,6 +14357,1150 @@
         "revisedAt": "2026-10-08T08:02:05.913Z",
         "title": "Typegen UI extension"
       }
+    },
+    {
+      "id": "post-empty-typegen_matrix_values-depth-0",
+      "endpoint": "typegen_matrix_values",
+      "contentId": "slyzv4szfg",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "slyzv4szfg",
+        "createdAt": "2026-10-08T08:29:24.574Z",
+        "updatedAt": "2026-10-08T08:29:24.574Z",
+        "publishedAt": "2026-10-08T08:29:24.574Z",
+        "revisedAt": "2026-10-08T08:29:24.574Z",
+        "title": "Typegen POST empty typegen_matrix_values",
+        "boolean": false,
+        "singleSelect": [],
+        "multiSelect": [],
+        "images": [],
+        "related": null,
+        "relatedMany": []
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_values-depth-1",
+      "endpoint": "typegen_matrix_values",
+      "contentId": "slyzv4szfg",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "slyzv4szfg",
+        "createdAt": "2026-10-08T08:29:24.574Z",
+        "updatedAt": "2026-10-08T08:29:24.574Z",
+        "publishedAt": "2026-10-08T08:29:24.574Z",
+        "revisedAt": "2026-10-08T08:29:24.574Z",
+        "title": "Typegen POST empty typegen_matrix_values",
+        "boolean": false,
+        "singleSelect": [],
+        "multiSelect": [],
+        "images": [],
+        "related": null,
+        "relatedMany": []
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_values-depth-2",
+      "endpoint": "typegen_matrix_values",
+      "contentId": "slyzv4szfg",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "slyzv4szfg",
+        "createdAt": "2026-10-08T08:29:24.574Z",
+        "updatedAt": "2026-10-08T08:29:24.574Z",
+        "publishedAt": "2026-10-08T08:29:24.574Z",
+        "revisedAt": "2026-10-08T08:29:24.574Z",
+        "title": "Typegen POST empty typegen_matrix_values",
+        "boolean": false,
+        "singleSelect": [],
+        "multiSelect": [],
+        "images": [],
+        "related": null,
+        "relatedMany": []
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_values-depth-3",
+      "endpoint": "typegen_matrix_values",
+      "contentId": "slyzv4szfg",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "slyzv4szfg",
+        "createdAt": "2026-10-08T08:29:24.574Z",
+        "updatedAt": "2026-10-08T08:29:24.574Z",
+        "publishedAt": "2026-10-08T08:29:24.574Z",
+        "revisedAt": "2026-10-08T08:29:24.574Z",
+        "title": "Typegen POST empty typegen_matrix_values",
+        "boolean": false,
+        "singleSelect": [],
+        "multiSelect": [],
+        "images": [],
+        "related": null,
+        "relatedMany": []
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_nested-depth-0",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "sixhb2asyz",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "sixhb2asyz",
+        "createdAt": "2026-10-08T08:29:30.174Z",
+        "updatedAt": "2026-10-08T08:29:30.174Z",
+        "publishedAt": "2026-10-08T08:29:30.174Z",
+        "revisedAt": "2026-10-08T08:29:30.174Z",
+        "title": "Typegen POST empty typegen_matrix_nested",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_nested-depth-1",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "sixhb2asyz",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "sixhb2asyz",
+        "createdAt": "2026-10-08T08:29:30.174Z",
+        "updatedAt": "2026-10-08T08:29:30.174Z",
+        "publishedAt": "2026-10-08T08:29:30.174Z",
+        "revisedAt": "2026-10-08T08:29:30.174Z",
+        "title": "Typegen POST empty typegen_matrix_nested",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_nested-depth-2",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "sixhb2asyz",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "sixhb2asyz",
+        "createdAt": "2026-10-08T08:29:30.174Z",
+        "updatedAt": "2026-10-08T08:29:30.174Z",
+        "publishedAt": "2026-10-08T08:29:30.174Z",
+        "revisedAt": "2026-10-08T08:29:30.174Z",
+        "title": "Typegen POST empty typegen_matrix_nested",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "post-empty-typegen_matrix_nested-depth-3",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "sixhb2asyz",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "POST",
+      "response": {
+        "id": "sixhb2asyz",
+        "createdAt": "2026-10-08T08:29:30.174Z",
+        "updatedAt": "2026-10-08T08:29:30.174Z",
+        "publishedAt": "2026-10-08T08:29:30.174Z",
+        "revisedAt": "2026-10-08T08:29:30.174Z",
+        "title": "Typegen POST empty typegen_matrix_nested",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "single-reference-published-depth-0",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "PUT",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg"
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg"
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg"
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg"
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-published-depth-1",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "PUT",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg",
+          "createdAt": "2026-10-08T08:29:24.574Z",
+          "updatedAt": "2026-10-08T08:29:24.574Z",
+          "publishedAt": "2026-10-08T08:29:24.574Z",
+          "revisedAt": "2026-10-08T08:29:24.574Z",
+          "title": "Typegen POST empty typegen_matrix_values",
+          "boolean": false,
+          "singleSelect": [],
+          "multiSelect": [],
+          "images": [],
+          "related": null,
+          "relatedMany": []
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg",
+            "createdAt": "2026-10-08T08:29:24.574Z",
+            "updatedAt": "2026-10-08T08:29:24.574Z",
+            "publishedAt": "2026-10-08T08:29:24.574Z",
+            "revisedAt": "2026-10-08T08:29:24.574Z",
+            "title": "Typegen POST empty typegen_matrix_values",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg",
+                      "createdAt": "2026-10-08T08:29:24.574Z",
+                      "updatedAt": "2026-10-08T08:29:24.574Z",
+                      "publishedAt": "2026-10-08T08:29:24.574Z",
+                      "revisedAt": "2026-10-08T08:29:24.574Z",
+                      "title": "Typegen POST empty typegen_matrix_values",
+                      "boolean": false,
+                      "singleSelect": [],
+                      "multiSelect": [],
+                      "images": [],
+                      "related": null,
+                      "relatedMany": []
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg",
+                        "createdAt": "2026-10-08T08:29:24.574Z",
+                        "updatedAt": "2026-10-08T08:29:24.574Z",
+                        "publishedAt": "2026-10-08T08:29:24.574Z",
+                        "revisedAt": "2026-10-08T08:29:24.574Z",
+                        "title": "Typegen POST empty typegen_matrix_values",
+                        "boolean": false,
+                        "singleSelect": [],
+                        "multiSelect": [],
+                        "images": [],
+                        "related": null,
+                        "relatedMany": []
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-published-depth-2",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "PUT",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg",
+          "createdAt": "2026-10-08T08:29:24.574Z",
+          "updatedAt": "2026-10-08T08:29:24.574Z",
+          "publishedAt": "2026-10-08T08:29:24.574Z",
+          "revisedAt": "2026-10-08T08:29:24.574Z",
+          "title": "Typegen POST empty typegen_matrix_values",
+          "boolean": false,
+          "singleSelect": [],
+          "multiSelect": [],
+          "images": [],
+          "related": null,
+          "relatedMany": []
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg",
+            "createdAt": "2026-10-08T08:29:24.574Z",
+            "updatedAt": "2026-10-08T08:29:24.574Z",
+            "publishedAt": "2026-10-08T08:29:24.574Z",
+            "revisedAt": "2026-10-08T08:29:24.574Z",
+            "title": "Typegen POST empty typegen_matrix_values",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg",
+                      "createdAt": "2026-10-08T08:29:24.574Z",
+                      "updatedAt": "2026-10-08T08:29:24.574Z",
+                      "publishedAt": "2026-10-08T08:29:24.574Z",
+                      "revisedAt": "2026-10-08T08:29:24.574Z",
+                      "title": "Typegen POST empty typegen_matrix_values",
+                      "boolean": false,
+                      "singleSelect": [],
+                      "multiSelect": [],
+                      "images": [],
+                      "related": null,
+                      "relatedMany": []
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg",
+                        "createdAt": "2026-10-08T08:29:24.574Z",
+                        "updatedAt": "2026-10-08T08:29:24.574Z",
+                        "publishedAt": "2026-10-08T08:29:24.574Z",
+                        "revisedAt": "2026-10-08T08:29:24.574Z",
+                        "title": "Typegen POST empty typegen_matrix_values",
+                        "boolean": false,
+                        "singleSelect": [],
+                        "multiSelect": [],
+                        "images": [],
+                        "related": null,
+                        "relatedMany": []
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-published-depth-3",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "PUT",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg",
+          "createdAt": "2026-10-08T08:29:24.574Z",
+          "updatedAt": "2026-10-08T08:29:24.574Z",
+          "publishedAt": "2026-10-08T08:29:24.574Z",
+          "revisedAt": "2026-10-08T08:29:24.574Z",
+          "title": "Typegen POST empty typegen_matrix_values",
+          "boolean": false,
+          "singleSelect": [],
+          "multiSelect": [],
+          "images": [],
+          "related": null,
+          "relatedMany": []
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg",
+            "createdAt": "2026-10-08T08:29:24.574Z",
+            "updatedAt": "2026-10-08T08:29:24.574Z",
+            "publishedAt": "2026-10-08T08:29:24.574Z",
+            "revisedAt": "2026-10-08T08:29:24.574Z",
+            "title": "Typegen POST empty typegen_matrix_values",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg",
+                      "createdAt": "2026-10-08T08:29:24.574Z",
+                      "updatedAt": "2026-10-08T08:29:24.574Z",
+                      "publishedAt": "2026-10-08T08:29:24.574Z",
+                      "revisedAt": "2026-10-08T08:29:24.574Z",
+                      "title": "Typegen POST empty typegen_matrix_values",
+                      "boolean": false,
+                      "singleSelect": [],
+                      "multiSelect": [],
+                      "images": [],
+                      "related": null,
+                      "relatedMany": []
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg",
+                        "createdAt": "2026-10-08T08:29:24.574Z",
+                        "updatedAt": "2026-10-08T08:29:24.574Z",
+                        "publishedAt": "2026-10-08T08:29:24.574Z",
+                        "revisedAt": "2026-10-08T08:29:24.574Z",
+                        "title": "Typegen POST empty typegen_matrix_values",
+                        "boolean": false,
+                        "singleSelect": [],
+                        "multiSelect": [],
+                        "images": [],
+                        "related": null,
+                        "relatedMany": []
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-closed-depth-0",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": null,
+                    "targets": [],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-closed-depth-1",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": null,
+                    "targets": [],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-closed-depth-2",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": null,
+                    "targets": [],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-closed-depth-3",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": null,
+                    "targets": [],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "csv-empty-nested-depth-0",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-csv",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "CSV",
+      "response": {
+        "id": "typegen-smoke-csv",
+        "createdAt": "2026-10-08T08:33:45.460Z",
+        "updatedAt": "2026-10-08T08:33:45.460Z",
+        "publishedAt": "2026-10-08T08:33:45.460Z",
+        "revisedAt": "2026-10-08T08:33:45.460Z",
+        "title": "Typegen CSV empty",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "csv-empty-nested-depth-1",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-csv",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "CSV",
+      "response": {
+        "id": "typegen-smoke-csv",
+        "createdAt": "2026-10-08T08:33:45.460Z",
+        "updatedAt": "2026-10-08T08:33:45.460Z",
+        "publishedAt": "2026-10-08T08:33:45.460Z",
+        "revisedAt": "2026-10-08T08:33:45.460Z",
+        "title": "Typegen CSV empty",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "csv-empty-nested-depth-2",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-csv",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "CSV",
+      "response": {
+        "id": "typegen-smoke-csv",
+        "createdAt": "2026-10-08T08:33:45.460Z",
+        "updatedAt": "2026-10-08T08:33:45.460Z",
+        "publishedAt": "2026-10-08T08:33:45.460Z",
+        "revisedAt": "2026-10-08T08:33:45.460Z",
+        "title": "Typegen CSV empty",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "csv-empty-nested-depth-3",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-csv",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "CSV",
+      "response": {
+        "id": "typegen-smoke-csv",
+        "createdAt": "2026-10-08T08:33:45.460Z",
+        "updatedAt": "2026-10-08T08:33:45.460Z",
+        "publishedAt": "2026-10-08T08:33:45.460Z",
+        "revisedAt": "2026-10-08T08:33:45.460Z",
+        "title": "Typegen CSV empty",
+        "related": null,
+        "relatedMany": [],
+        "details": null,
+        "blocks": null
+      }
+    },
+    {
+      "id": "single-reference-restored-depth-0",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg"
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg"
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg"
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg"
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-restored-depth-1",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg",
+          "createdAt": "2026-10-08T08:29:24.574Z",
+          "updatedAt": "2026-10-08T08:35:19.172Z",
+          "publishedAt": "2026-10-08T08:35:19.172Z",
+          "revisedAt": "2026-10-08T08:35:19.172Z",
+          "title": "Typegen POST empty typegen_matrix_values",
+          "boolean": false,
+          "singleSelect": [],
+          "multiSelect": [],
+          "images": [],
+          "related": null,
+          "relatedMany": []
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg",
+            "createdAt": "2026-10-08T08:29:24.574Z",
+            "updatedAt": "2026-10-08T08:35:19.172Z",
+            "publishedAt": "2026-10-08T08:35:19.172Z",
+            "revisedAt": "2026-10-08T08:35:19.172Z",
+            "title": "Typegen POST empty typegen_matrix_values",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg",
+                      "createdAt": "2026-10-08T08:29:24.574Z",
+                      "updatedAt": "2026-10-08T08:35:19.172Z",
+                      "publishedAt": "2026-10-08T08:35:19.172Z",
+                      "revisedAt": "2026-10-08T08:35:19.172Z",
+                      "title": "Typegen POST empty typegen_matrix_values",
+                      "boolean": false,
+                      "singleSelect": [],
+                      "multiSelect": [],
+                      "images": [],
+                      "related": null,
+                      "relatedMany": []
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg",
+                        "createdAt": "2026-10-08T08:29:24.574Z",
+                        "updatedAt": "2026-10-08T08:35:19.172Z",
+                        "publishedAt": "2026-10-08T08:35:19.172Z",
+                        "revisedAt": "2026-10-08T08:35:19.172Z",
+                        "title": "Typegen POST empty typegen_matrix_values",
+                        "boolean": false,
+                        "singleSelect": [],
+                        "multiSelect": [],
+                        "images": [],
+                        "related": null,
+                        "relatedMany": []
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-restored-depth-2",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg",
+          "createdAt": "2026-10-08T08:29:24.574Z",
+          "updatedAt": "2026-10-08T08:35:19.172Z",
+          "publishedAt": "2026-10-08T08:35:19.172Z",
+          "revisedAt": "2026-10-08T08:35:19.172Z",
+          "title": "Typegen POST empty typegen_matrix_values",
+          "boolean": false,
+          "singleSelect": [],
+          "multiSelect": [],
+          "images": [],
+          "related": null,
+          "relatedMany": []
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg",
+            "createdAt": "2026-10-08T08:29:24.574Z",
+            "updatedAt": "2026-10-08T08:35:19.172Z",
+            "publishedAt": "2026-10-08T08:35:19.172Z",
+            "revisedAt": "2026-10-08T08:35:19.172Z",
+            "title": "Typegen POST empty typegen_matrix_values",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg",
+                      "createdAt": "2026-10-08T08:29:24.574Z",
+                      "updatedAt": "2026-10-08T08:35:19.172Z",
+                      "publishedAt": "2026-10-08T08:35:19.172Z",
+                      "revisedAt": "2026-10-08T08:35:19.172Z",
+                      "title": "Typegen POST empty typegen_matrix_values",
+                      "boolean": false,
+                      "singleSelect": [],
+                      "multiSelect": [],
+                      "images": [],
+                      "related": null,
+                      "relatedMany": []
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg",
+                        "createdAt": "2026-10-08T08:29:24.574Z",
+                        "updatedAt": "2026-10-08T08:35:19.172Z",
+                        "publishedAt": "2026-10-08T08:35:19.172Z",
+                        "revisedAt": "2026-10-08T08:35:19.172Z",
+                        "title": "Typegen POST empty typegen_matrix_values",
+                        "boolean": false,
+                        "singleSelect": [],
+                        "multiSelect": [],
+                        "images": [],
+                        "related": null,
+                        "relatedMany": []
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "single-reference-restored-depth-3",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-reference",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "management-ui-status",
+      "response": {
+        "id": "typegen-smoke-reference",
+        "createdAt": "2026-10-08T08:29:35.987Z",
+        "updatedAt": "2026-10-08T08:29:35.987Z",
+        "publishedAt": "2026-10-08T08:29:35.987Z",
+        "revisedAt": "2026-10-08T08:29:35.987Z",
+        "title": "Typegen single reference visibility",
+        "related": {
+          "id": "slyzv4szfg",
+          "createdAt": "2026-10-08T08:29:24.574Z",
+          "updatedAt": "2026-10-08T08:35:19.172Z",
+          "publishedAt": "2026-10-08T08:35:19.172Z",
+          "revisedAt": "2026-10-08T08:35:19.172Z",
+          "title": "Typegen POST empty typegen_matrix_values",
+          "boolean": false,
+          "singleSelect": [],
+          "multiSelect": [],
+          "images": [],
+          "related": null,
+          "relatedMany": []
+        },
+        "relatedMany": [
+          {
+            "id": "slyzv4szfg",
+            "createdAt": "2026-10-08T08:29:24.574Z",
+            "updatedAt": "2026-10-08T08:35:19.172Z",
+            "publishedAt": "2026-10-08T08:35:19.172Z",
+            "revisedAt": "2026-10-08T08:35:19.172Z",
+            "title": "Typegen POST empty typegen_matrix_values",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "details": null,
+        "blocks": [
+          {
+            "fieldId": "section",
+            "children": [
+              {
+                "fieldId": "group",
+                "items": [
+                  {
+                    "fieldId": "linkBlock",
+                    "target": {
+                      "id": "slyzv4szfg",
+                      "createdAt": "2026-10-08T08:29:24.574Z",
+                      "updatedAt": "2026-10-08T08:35:19.172Z",
+                      "publishedAt": "2026-10-08T08:35:19.172Z",
+                      "revisedAt": "2026-10-08T08:35:19.172Z",
+                      "title": "Typegen POST empty typegen_matrix_values",
+                      "boolean": false,
+                      "singleSelect": [],
+                      "multiSelect": [],
+                      "images": [],
+                      "related": null,
+                      "relatedMany": []
+                    },
+                    "targets": [
+                      {
+                        "id": "slyzv4szfg",
+                        "createdAt": "2026-10-08T08:29:24.574Z",
+                        "updatedAt": "2026-10-08T08:35:19.172Z",
+                        "publishedAt": "2026-10-08T08:35:19.172Z",
+                        "revisedAt": "2026-10-08T08:35:19.172Z",
+                        "title": "Typegen POST empty typegen_matrix_values",
+                        "boolean": false,
+                        "singleSelect": [],
+                        "multiSelect": [],
+                        "images": [],
+                        "related": null,
+                        "relatedMany": []
+                      }
+                    ],
+                    "choices": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "field-added-existing-depth-0",
+      "endpoint": "typegen_matrix_ui_extension",
+      "contentId": "typegen-ui-extension",
+      "queries": {
+        "depth": 0
+      },
+      "inputMethod": "schema-addition",
+      "response": {
+        "id": "typegen-ui-extension",
+        "createdAt": "2026-10-08T08:02:05.913Z",
+        "updatedAt": "2026-10-08T08:02:05.913Z",
+        "publishedAt": "2026-10-08T08:02:05.913Z",
+        "revisedAt": "2026-10-08T08:02:05.913Z",
+        "title": "Typegen UI extension"
+      }
+    },
+    {
+      "id": "field-added-existing-depth-1",
+      "endpoint": "typegen_matrix_ui_extension",
+      "contentId": "typegen-ui-extension",
+      "queries": {
+        "depth": 1
+      },
+      "inputMethod": "schema-addition",
+      "response": {
+        "id": "typegen-ui-extension",
+        "createdAt": "2026-10-08T08:02:05.913Z",
+        "updatedAt": "2026-10-08T08:02:05.913Z",
+        "publishedAt": "2026-10-08T08:02:05.913Z",
+        "revisedAt": "2026-10-08T08:02:05.913Z",
+        "title": "Typegen UI extension"
+      }
+    },
+    {
+      "id": "field-added-existing-depth-2",
+      "endpoint": "typegen_matrix_ui_extension",
+      "contentId": "typegen-ui-extension",
+      "queries": {
+        "depth": 2
+      },
+      "inputMethod": "schema-addition",
+      "response": {
+        "id": "typegen-ui-extension",
+        "createdAt": "2026-10-08T08:02:05.913Z",
+        "updatedAt": "2026-10-08T08:02:05.913Z",
+        "publishedAt": "2026-10-08T08:02:05.913Z",
+        "revisedAt": "2026-10-08T08:02:05.913Z",
+        "title": "Typegen UI extension"
+      }
+    },
+    {
+      "id": "field-added-existing-depth-3",
+      "endpoint": "typegen_matrix_ui_extension",
+      "contentId": "typegen-ui-extension",
+      "queries": {
+        "depth": 3
+      },
+      "inputMethod": "schema-addition",
+      "response": {
+        "id": "typegen-ui-extension",
+        "createdAt": "2026-10-08T08:02:05.913Z",
+        "updatedAt": "2026-10-08T08:02:05.913Z",
+        "publishedAt": "2026-10-08T08:02:05.913Z",
+        "revisedAt": "2026-10-08T08:02:05.913Z",
+        "title": "Typegen UI extension"
+      }
     }
   ],
   "rejected": [
@@ -14371,14 +15581,60 @@
     "serviceUrl": "https://typegen.microcms.io/",
     "schema": "Management API GET /api/v1/apis and GET /api/v1/apis/{endpoint}",
     "reads": "Content API GET",
-    "writes": "Content API PUT and PATCH",
+    "writes": "Content API POST, PUT and PATCH; management UI CSV import",
     "notes": [
       "Dedicated synthetic test contents; no existing content was changed.",
       "Media URLs are replaced consistently with example.com URLs.",
       "Object content was initially published in the management screen before API updates.",
       "Filled list and object content was restored after reset tests.",
       "Management UI inputs are marked inputMethod: management-ui; their dedicated content remains published with cleared fields.",
-      "Extension UI capture covers initial omission only; the local input iframe did not load in the in-app browser."
+      "The sole reference target was closed and republished in the management UI; closed references return null or empty arrays with this API key.",
+      "addedText was added in the management UI without updating existing content before GET."
     ]
-  }
+  },
+  "csvInputs": [
+    {
+      "id": "csv-empty-nested",
+      "endpoint": "typegen_matrix_nested",
+      "contentId": "typegen-smoke-csv",
+      "columns": [
+        "コンテンツID\n※空欄で構いません。特定の値を設定したい場合に入力してください。",
+        "title",
+        "related",
+        "relatedMany",
+        "details",
+        "blocks"
+      ],
+      "rows": [
+        [
+          "typegen-smoke-csv",
+          "Typegen CSV empty",
+          "",
+          "",
+          "",
+          ""
+        ]
+      ],
+      "status": "PUBLISH"
+    }
+  ],
+  "schemaChanges": [
+    {
+      "id": "field-added-existing",
+      "endpoint": "typegen_matrix_ui_extension",
+      "addedField": {
+        "fieldId": "addedText",
+        "name": "addedText",
+        "kind": "text",
+        "description": null,
+        "required": false,
+        "textSizeLimitValidation": null,
+        "patternMatchValidation": null,
+        "isUnique": false,
+        "initialValue": null
+      },
+      "contentId": "typegen-ui-extension",
+      "contentUpdated": false
+    }
+  ]
 }
