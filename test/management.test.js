@@ -244,3 +244,250 @@ test('network failures without Error objects remain masked and bounded', async (
   );
   assert.equal(calls, 5);
 });
+
+test('Management API errors do not include the API key', async () => {
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    fetchImpl: async () => ({ ok: false, status: 403 }),
+  });
+  await assert.rejects(
+    client.listApis(),
+    (error) =>
+      error.message.includes('403') && !error.message.includes('secret-key'),
+  );
+});
+
+test('Management API retries HTTP 429', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    fetchImpl: async () => {
+      requests++;
+      return requests === 1
+        ? { ok: false, status: 429, headers: { get: () => '0' } }
+        : { ok: true, status: 200, json: async () => ({ apis: [] }) };
+    },
+  });
+  assert.deepEqual(await client.listApis(), []);
+  assert.equal(requests, 2);
+});
+
+test('Management API retries temporary server and network errors', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      requests++;
+      if (requests === 1)
+        throw new TypeError('secret-key should not be exposed');
+      if (requests === 2) return { ok: false, status: 503 };
+      return { ok: true, status: 200, json: async () => ({ apis: [] }) };
+    },
+  });
+  assert.deepEqual(await client.listApis(), []);
+  assert.equal(requests, 3);
+});
+
+test('Management API does not retry permission errors and gives a useful hint', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      requests++;
+      return { ok: false, status: 403 };
+    },
+  });
+  await assert.rejects(
+    client.listApis(),
+    (error) =>
+      error.message.includes('HTTP 403') &&
+      error.message.includes('API information permission') &&
+      !error.message.includes('secret-key'),
+  );
+  assert.equal(requests, 1);
+});
+
+test('Management API times out and reports the failure without exposing the key', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    timeoutMs: 5,
+    fetchImpl: async (_url, { signal }) => {
+      requests++;
+      await new Promise((_, reject) => {
+        const keepAlive = setTimeout(
+          () => reject(new Error('Abort signal did not fire')),
+          100,
+        );
+        signal.addEventListener(
+          'abort',
+          () => {
+            clearTimeout(keepAlive);
+            reject(signal.reason);
+          },
+          { once: true },
+        );
+      });
+    },
+  });
+  await assert.rejects(
+    client.listApis(),
+    (error) =>
+      error.message.includes('timed out after 5 ms') &&
+      !error.message.includes('secret-key'),
+  );
+  assert.equal(requests, 5);
+});
+
+test('Management API retries a connection failure while reading a successful response body', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      requests++;
+      return requests === 1
+        ? new Response(
+            new ReadableStream({
+              start(controller) {
+                controller.error(
+                  new TypeError('secret-key connection terminated'),
+                );
+              },
+            }),
+          )
+        : new Response(JSON.stringify({ apis: [] }));
+    },
+  });
+  assert.deepEqual(await client.listApis(), []);
+  assert.equal(requests, 2);
+});
+
+test('Management API limits response body network retries and masks error details', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      requests++;
+      return new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.error(new TypeError('secret-key connection terminated'));
+          },
+        }),
+      );
+    },
+  });
+  await assert.rejects(
+    client.getSchema('blogs'),
+    (error) =>
+      error.message.includes(
+        'apis/blogs failed due to a network error after 5 attempts',
+      ) && !error.message.includes('secret-key'),
+  );
+  assert.equal(requests, 5);
+});
+
+test('Management API reports response body timeouts and retries within the same limit', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    timeoutMs: 5,
+    fetchImpl: async (_url, { signal }) => {
+      requests++;
+      return new Response(
+        new ReadableStream({
+          start(controller) {
+            const keepAlive = setTimeout(
+              () => controller.error(new Error('Abort signal did not fire')),
+              100,
+            );
+            signal.addEventListener(
+              'abort',
+              () => {
+                clearTimeout(keepAlive);
+                controller.error(signal.reason);
+              },
+              { once: true },
+            );
+          },
+        }),
+      );
+    },
+  });
+  await assert.rejects(
+    client.listApis(),
+    (error) =>
+      error.message.includes('timed out after 5 ms') &&
+      !error.message.includes('secret-key'),
+  );
+  assert.equal(requests, 5);
+});
+
+test('Management API distinguishes invalid JSON from transient response body failures', async () => {
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      requests++;
+      return new Response('{"secret-key":');
+    },
+  });
+  await assert.rejects(
+    client.listApis(),
+    (error) => error.message === 'Management API apis returned invalid JSON',
+  );
+  assert.equal(requests, 1);
+});
+
+test('Management API releases unused HTTP error bodies before retrying or failing', async () => {
+  const canceled = [];
+  const statuses = [429, 503, 403];
+  let requests = 0;
+  const client = createManagementClient({
+    serviceDomain: 'sample',
+    apiKey: 'secret-key',
+    requestIntervalMs: 0,
+    retryDelayMs: 0,
+    fetchImpl: async () => {
+      const status = statuses[requests++];
+      return new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode('Unused error body'));
+          },
+          cancel() {
+            canceled.push(status);
+          },
+        }),
+        { status, headers: { 'Retry-After': '0' } },
+      );
+    },
+  });
+  await assert.rejects(client.listApis(), /HTTP 403/);
+  assert.equal(requests, 3);
+  assert.deepEqual(canceled, statuses);
+});

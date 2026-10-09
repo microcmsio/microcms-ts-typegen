@@ -4,6 +4,7 @@ import { compilerBinary } from '../test/helpers/type-compiler.mjs';
 const tests = [
   'config-types',
   'generated-types',
+  'field-types',
   'relation-depth',
   'captured-schemas',
   'live-schema-values',

@@ -30,14 +30,43 @@ npm run build
 
 ### 型生成・CLI・通信
 
-| パターン                                                                                                             | 使用データ                                                                                       | 対応するテスト                                                                                                                                                   |
-| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| スキーマからの生成結果がサンプルと一致し、コンパイルできる                                                           | [examples/schemas.json](examples/schemas.json) → [microcms-types.ts](examples/microcms-types.ts) | [captured-schemas.test.js](test/captured-schemas.test.js)                                                                                                        |
-| 各フィールド型・空値・共通日時、リストの`id`、オブジェクトの`id`なし、拡張データのread/write、文字列のエスケープ     | テスト内の合成スキーマ・拡張データ型                                                             | [generate.test.js](test/generate.test.js)、[generated-types.test.js](test/generated-types.test.js)                                                               |
-| 多段・循環参照、`depth: 0`〜`3`の境界、3層の繰り返し、`fieldId`の絞り込み・不正な書き込み                            | [tree-schema.json](test/fixtures/tree-schema.json) → テスト内で生成した型                        | [relation-depth.test.js](test/relation-depth.test.js)                                                                                                            |
-| 命名衝突、不正・未対応のスキーマ、欠落した参照先、エンドポイント選択、拡張フィールド設定の誤り                       | テスト内の合成スキーマ・設定                                                                     | [generate-validation.test.js](test/generate-validation.test.js)、[generate.test.js](test/generate.test.js)                                                       |
-| `satisfies Config`、環境変数、複数サービス、init・generate・check、上書き保護、設定・ファイルのエラー                | テスト内の設定・一時ファイル                                                                     | [config-types.test.js](test/config-types.test.js)、[init.test.js](test/init.test.js)、[cli.test.js](test/cli.test.js)、[generate.test.js](test/generate.test.js) |
-| API一覧・スキーマ取得のURL・認証・レスポンス検査、HTTP／ネットワークエラー、タイムアウト、再試行・間隔、キーの非露出 | `fetchImpl`、時計・タイマーのモック                                                              | [management.test.js](test/management.test.js)、[generate.test.js](test/generate.test.js)                                                                         |
+| パターン | 使用データ | 対応するテスト |
+| --- | --- | --- |
+| 保存済みスキーマからサンプルと同じ型を生成・コンパイル | [schemas.json](examples/schemas.json) → [microcms-types.ts](examples/microcms-types.ts) | [captured-schemas.test.js](test/captured-schemas.test.js) |
+| 全フィールドのread・create・update、空値・省略、必須設定を変えても空値・省略を維持 | 合成スキーマ、保存済み実APIデータの網羅性確認 | [field-types.test.js](test/field-types.test.js) |
+| 共通日時・リストのid・オブジェクトのidなし、拡張データ型、文字列のエスケープ | 合成スキーマ・拡張データ型 | [generated-types.test.js](test/generated-types.test.js)、[generate.test.js](test/generate.test.js) |
+| 多段・循環参照、depth:0〜3、3層の繰り返し、fieldIdの絞り込み・不正な書き込み | [tree-schema.json](test/fixtures/tree-schema.json) → 生成型 | [relation-depth.test.js](test/relation-depth.test.js) |
+| 型生成結果・フィールドパス、命名衝突、不正スキーマ、参照先・拡張設定の誤り | 合成スキーマ・設定 | [generate.test.js](test/generate.test.js)、[generate-validation.test.js](test/generate-validation.test.js) |
+| CLIの引数・設定ファイル・環境変数、satisfies Config、initで既存ファイルを保持 | 設定・一時ファイル | [cli.test.js](test/cli.test.js)、[config-types.test.js](test/config-types.test.js)、[init.test.js](test/init.test.js) |
+| generate・check、ファイル保護、改行コード、複数サービスの出力・失敗時の保持 | 設定・一時ファイル、fetchImplのモック | [cli-generation.test.js](test/cli-generation.test.js) |
+| API一覧・スキーマ取得のURL・認証・レスポンス検査、エラー・タイムアウト・再試行・キーの非露出 | fetchImpl、時計・タイマーのモック | [management.test.js](test/management.test.js) |
+
+### フィールド種類の網羅
+
+[公式の16種類](https://document.microcms.io/content-api/get-api-field-responses)は、[field-types.test.js](test/field-types.test.js)の`fieldCases`に対応します。セレクトの単一・複数選択を分けた17ケースで、各フィールドの読み取り・作成・更新の期待型とキーの省略可否を明示しています。
+
+| フィールド | スキーマのkind | テストのフィールドID |
+| --- | --- | --- |
+| テキスト | `text` | `text` |
+| テキストエリア | `textArea` | `textArea` |
+| リッチエディタ | `richEditorV2` | `html` |
+| 旧リッチエディタ | `richEditor` | `legacyHtml` |
+| 画像 | `media` | `image` |
+| 複数画像 | `mediaList` | `images` |
+| 日時 | `date` | `date` |
+| 真偽値 | `boolean` | `boolean` |
+| セレクト（単一・複数選択） | `select` | `singleSelect`・`multiSelect` |
+| コンテンツ参照 | `relation` | `related` |
+| 複数コンテンツ参照 | `relationList` | `relatedMany` |
+| 数字 | `number` | `number` |
+| カスタムフィールド | `custom` | `details` |
+| 繰り返し | `repeater` | `blocks` |
+| ファイル | `file` | `file` |
+| 拡張フィールド | `iframe` | `extension` |
+
+トップレベルとカスタムフィールド内の両方で、生成された公開型から対象プロパティを取り出し、read・create・updateの期待型とTypeScriptで照合します（17ケース×2箇所×3モード＝102箇所）。カスタムフィールド内のキー省略と、数値・真偽値・参照などの更新時のクリア値も含みます。管理画面の必須設定を変更しても空値・省略の型が狭まらないことを確認します。
+
+保存済み実APIデータにも16種類と両セレクト設定があり、値ありレスポンスに上記17項目が含まれることを同じテストで検査します。具体的な値・入力方法ごとの違いは次の実APIテスト、拡張フィールドのdata型指定は[generated-types.test.js](test/generated-types.test.js)、参照深度・多段ネストは[relation-depth.test.js](test/relation-depth.test.js)で確認します。
 
 ### 実APIの値と生成型の一致
 
@@ -70,7 +99,7 @@ typegenはスキーマ取得と生成型の正しさ、SDKは生成型を使う�
 
 生成型の形式を変更した場合は、SDKの`tests/fixtures/typegen/generated/`と利用例の生成型も更新し、SDKの`npm run test:types`を実行します。各リポジトリのCIは単独で動き、隣接リポジトリや未公開の変更には依存しません。
 
-保存データを更新するときは、入力・クエリ・レスポンスの対応を保ち、URL・メールアドレスをダミー化します。APIキーなどの認証情報は保存しません。型検査の共通処理は`test/helpers/`、性能測定は[scripts/check-type-performance.mjs](scripts/check-type-performance.mjs)にあります。性能は`tsc --extendedDiagnostics`で3回測定し、固定時間での合否判定には使いません。
+保存データを更新するときは、入力・クエリ・レスポンスの対応を保ち、URL・メールアドレスをダミー化します。APIキーなどの認証情報は保存しません。型検査の共通処理と合成スキーマは`test/helpers/`、性能測定は[scripts/check-type-performance.mjs](scripts/check-type-performance.mjs)にあります。性能は`tsc --extendedDiagnostics`で3回測定し、固定時間での合否判定には使いません。
 
 ## カバレッジ・CI・リリース
 

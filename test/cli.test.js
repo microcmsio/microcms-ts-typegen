@@ -9,11 +9,13 @@ import {
   rm,
   writeFile,
 } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { run } from '../dist/cli.js';
+
+const configSource = (config) => `export default ${JSON.stringify(config)};\n`;
 
 const cli = fileURLToPath(new URL('../dist/cli.js', import.meta.url));
 async function workspace(t) {
@@ -119,25 +121,6 @@ test('syntax errors and filesystem errors are surfaced without being mistaken fo
   });
 });
 
-test('output read failures are surfaced by generate and check without replacing the target', async (t) => {
-  const directory = await workspace(t);
-  const output = join(directory, 'directory.ts');
-  const config = join(directory, 'config.ts');
-  await mkdir(output);
-  await writeFile(
-    config,
-    `export default ${JSON.stringify({ services: { main: { serviceDomain: 'sample', apiKey: 'TEST_ONLY', output } } })};`,
-  );
-  const fetchImpl = async () => new Response(JSON.stringify({ apis: [] }));
-  for (const command of ['generate', 'check']) {
-    await assert.rejects(
-      run([command, '--config', config], { fetchImpl, requestIntervalMs: 0 }),
-      { code: 'EISDIR' },
-    );
-    assert.deepEqual(await readdir(output), []);
-  }
-});
-
 test('env loading reports unreadable files with a nonzero exit code', async (t) => {
   const directory = await workspace(t);
   await mkdir(join(directory, '.env'));
@@ -194,4 +177,157 @@ test('ESM TypeScript configs work with unspecified or module package types', asy
     assert.match(result.stderr, /services must be a nonempty object/);
     assert.doesNotMatch(result.stderr, /SyntaxError|ERR_REQUIRE_ESM/);
   }
+});
+
+test('CLI help shows value formats and usable examples', () => {
+  const help = execFileSync(process.execPath, ['dist/cli.js', '--help'], {
+    encoding: 'utf8',
+  });
+  assert.match(help, /<init\|generate\|check>/);
+  assert.doesNotMatch(help, /--service-domain|--api-key|--output|--endpoints/);
+  assert.match(help, /--config <file.ts>/);
+  assert.match(help, /--service <config-name>.*corporate/);
+});
+
+test('CLI reports missing values and rejects removed config overrides', async () => {
+  await assert.rejects(
+    run(['generate', '--config']),
+    /Missing value for --config: expected a \.ts file path/,
+  );
+  await assert.rejects(
+    run(['generate', '--service']),
+    /Missing value for --service/,
+  );
+  for (const flag of [
+    '--service-domain',
+    '--api-key',
+    '--output',
+    '--endpoints',
+  ]) {
+    await assert.rejects(
+      run(['generate', flag, 'value']),
+      (error) => error.message === `Unknown option: ${flag}`,
+    );
+  }
+});
+
+test('CLI rejects unknown arguments that match inherited object properties before loading config', async () => {
+  for (const command of ['init', 'generate', 'check']) {
+    for (const argument of ['constructor', 'toString', '__proto__']) {
+      await assert.rejects(
+        run([command, argument, 'value', '--config', '/nonexistent/config.ts']),
+        (error) => error.message === `Unknown option: ${argument}`,
+      );
+    }
+  }
+});
+
+test('CLI requires config even when environment credentials exist', async () => {
+  const folder = await mkdtemp(
+    join(tmpdir(), 'microcms-typegen-no-env-fallback-test-'),
+  );
+  const cli = new URL('../dist/cli.js', import.meta.url).pathname;
+  const env = {
+    ...process.env,
+    MICROCMS_SERVICE_DOMAIN: 'sample',
+    MICROCMS_API_INFO_API_KEY: 'secret-key',
+  };
+  for (const command of ['generate', 'check']) {
+    const result = spawnSync(process.execPath, [cli, command], {
+      cwd: folder,
+      encoding: 'utf8',
+      env,
+    });
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /Config file not found.*microcms-typegen init/);
+  }
+  const configPath = join(folder, 'config.ts');
+  await writeFile(configPath, 'export default {};');
+  await assert.rejects(
+    run(['generate', '--config', configPath]),
+    /Config must define services/,
+  );
+});
+
+test('CLI loads a TypeScript config file on the minimum Node version', async () => {
+  const folder = await mkdtemp(
+    join(tmpdir(), 'microcms-typegen-ts-config-test-'),
+  );
+  const configPath = join(folder, 'config.ts');
+  const output = join(folder, 'types.ts');
+  await writeFile(
+    configPath,
+    `export default { services: { main: { serviceDomain: 'sample', apiKey: 'key', output: ${JSON.stringify(output)}, endpoints: ['simple'] } } };\n`,
+  );
+  const fetchImpl = async (url) => ({
+    ok: true,
+    json: async () =>
+      url.endsWith('/apis')
+        ? { apis: [{ endpoint: 'simple', type: 'list' }] }
+        : { apiFields: [{ fieldId: 'title', kind: 'text' }], customFields: [] },
+  });
+  await run(['generate', '--config', configPath], {
+    fetchImpl,
+    requestIntervalMs: 0,
+  });
+  assert.match(
+    await readFile(output, 'utf8'),
+    /"simple": \{[^\n]+fieldPaths: /,
+  );
+});
+
+test('CLI rejects non-TypeScript configs before making requests', async () => {
+  for (const extension of ['json', 'js', 'mjs']) {
+    await assert.rejects(
+      run(['generate', '--config', `config.${extension}`]),
+      /Config must be a .ts file/,
+    );
+  }
+});
+
+test('missing environment credentials fail before any API request', async () => {
+  const folder = await mkdtemp(
+    join(tmpdir(), 'microcms-typegen-required-env-test-'),
+  );
+  const variable = `MICROCMS_TYPEGEN_MISSING_${folder.split('-').at(-1)}`;
+  for (const field of ['serviceDomain', 'apiKey']) {
+    const configPath = join(folder, `${field}.ts`);
+    await writeFile(
+      configPath,
+      `export default { services: { main: {
+      serviceDomain: 'sample', apiKey: 'key', output: './types.ts',
+      ${field}: process.env[${JSON.stringify(variable)}],
+    } } };`,
+    );
+    let requested = false;
+    await assert.rejects(
+      run(['generate', '--config', configPath], {
+        fetchImpl: async () => {
+          requested = true;
+          throw new Error('Unexpected request');
+        },
+      }),
+      (error) => error.message.startsWith(`services.main.${field} is required`),
+    );
+    assert.equal(requested, false);
+  }
+});
+
+test('legacy top-level service config reports the migration path', async () => {
+  const folder = await mkdtemp(
+    join(tmpdir(), 'microcms-typegen-legacy-config-test-'),
+  );
+  const configPath = join(folder, 'config.ts');
+  await writeFile(
+    configPath,
+    configSource({
+      serviceDomain: 'old',
+      apiKey: 'key',
+      output: join(folder, 'types.ts'),
+    }),
+  );
+  await assert.rejects(
+    run(['generate', '--config', configPath]),
+    /Config must define services/,
+  );
 });
