@@ -33,7 +33,7 @@ npm run build
 | パターン | 使用データ | 対応するテスト |
 | --- | --- | --- |
 | 保存済みスキーマからサンプルと同じ型を生成・コンパイル | [schemas.json](examples/schemas.json) → [microcms-types.ts](examples/microcms-types.ts) | [captured-schemas.test.js](test/captured-schemas.test.js) |
-| 全フィールドのread・create・update、空値・省略、必須設定を変えても空値・省略を維持 | 合成スキーマ、保存済み実APIデータの網羅性確認 | [field-types.test.js](test/field-types.test.js) |
+| 全フィールドのread・create・update、必須OFF・ONと読み取りオプションの省略・空値・必須項目 | 合成スキーマ、保存済み実APIデータの網羅性確認 | [field-types.test.js](test/field-types.test.js) |
 | 共通日時・リストのid・オブジェクトのidなし、拡張データ型、文字列のエスケープ | 合成スキーマ・拡張データ型 | [generated-types.test.js](test/generated-types.test.js)、[generate.test.js](test/generate.test.js) |
 | 多段・循環参照、depth:0〜3、3層の繰り返し、fieldIdの絞り込み・不正な書き込み | [tree-schema.json](test/fixtures/tree-schema.json) → 生成型 | [relation-depth.test.js](test/relation-depth.test.js) |
 | 型生成結果・フィールドパス、命名衝突、不正スキーマ、参照先・拡張設定の誤り | 合成スキーマ・設定 | [generate.test.js](test/generate.test.js)、[generate-validation.test.js](test/generate-validation.test.js) |
@@ -64,7 +64,7 @@ npm run build
 | ファイル | `file` | `file` |
 | 拡張フィールド | `iframe` | `extension` |
 
-トップレベルとカスタムフィールド内の両方で、生成された公開型から対象プロパティを取り出し、read・create・updateの期待型とTypeScriptで照合します（17ケース×2箇所×3モード＝102箇所）。カスタムフィールド内のキー省略と、数値・真偽値・参照などの更新時のクリア値も含みます。管理画面の必須設定を変更しても空値・省略の型が狭まらないことを確認します。
+トップレベル・カスタムフィールド内のread・create・updateを、必須OFF、必須ON（既定／読み取りオプション有効）の3構成で照合します。キーの省略・空値・更新時のクリア値・非空配列も検査します。
 
 保存済み実APIデータにも16種類と両セレクト設定があり、値ありレスポンスに上記17項目が含まれることを同じテストで検査します。具体的な値・入力方法ごとの違いは次の実APIテスト、拡張フィールドのdata型指定は[generated-types.test.js](test/generated-types.test.js)、参照深度・多段ネストは[relation-depth.test.js](test/relation-depth.test.js)で確認します。
 
@@ -89,9 +89,32 @@ npm run build
 
 管理画面でクリアした文字列・数値はキーが省略され、単一参照は`null`、複数参照・選択肢は`[]`でした。空値は入力方法とフィールドの種類で異なるため、[公式の返却値一覧](https://document.microcms.io/content-api/get-api-field-responses#hf57c580171)に対して上記の範囲を検証しています。
 
+### 必須設定・更新範囲
+
+[required-write-values.json](test/fixtures/required-write-values.json)に、`typegen_matrix_required`・`typegen_matrix_nested`のスキーマとPUT・POST・PATCHの50ケースを保存しています。[required-write-values.test.js](test/required-write-values.test.js)でAPIの挙動と成功レスポンスの読み取り型を照合します（実サービスへの通信なし）。
+
+| 確認パターン | fixtureのケースID・記録 |
+| --- | --- |
+| 必須テキスト・数値の省略／クリアを拒否。初期値による補完なし。PATCHの省略項目は保持 | `create-omit-*`、`post-omit-title`、`{create,update}-clear-*`、`update-only-title` |
+| APIは必須真偽値の省略を許可し`false`を返す。必須カスタムへの`{}`も許可し、必須の子が欠ける | `{create,post}-omit-enabled`、`{create,post,update}-clear-details` |
+| カスタム内の必須の子を検査し、PATCHでは省略した任意の子を保持。繰り返しは配列全体を置換 | `create-*custom-omit-required-label`、`update-custom-*`、`update-optional-custom-*`、`update-*repeater-*` |
+| 繰り返しの最小／最大件数と要素内の必須項目を検査。ネストも同様 | `{create,update}-{repeater,nested-repeater}-count-*`、`create-repeater-omit-required-label`、`update-repeater-{element-label-only,clear-nested-label}` |
+| 管理画面は必須カスタムの空入力を下書き保存・公開とも拒否（手動確認） | `uiChecks[]` |
+
+### 型生成ルール
+
+[array-minimum-values.json](test/fixtures/array-minimum-values.json)の22ケースを[array-minimum-values.test.js](test/array-minimum-values.test.js)で検査。必須OFFでも最小件数1の複数参照・繰り返しはPOST・PUTで省略・`[]`・`null`を拒否し、PATCHはキー省略だけ許可して既存値を保持する。管理画面でも未選択の複数参照の下書き保存・公開を拒否する。
+
+- 読み取り：`trustReadFieldConstraints`は省略・`false`でOFF、`true`またはオブジェクトでON。必須・最小件数1以上を信頼し、オブジェクト内の`trustReferenceAvailability: true`で必須単一参照の`null`や必須・最小件数1以上の複数参照の空配列も除く。子の既定は`false`。実データの検査はしない。
+- 書き込み：必須設定を常に反映。複数参照・繰り返しの最小件数1以上も作成時にキー必須。更新のトップレベルは省略可能だが、指定したカスタム・繰り返し要素の必須の子は必要。任意のカスタムは更新時に`{}`でクリア可能。
+- 配列：必須または最小件数1以上を`[T, ...T[]]`で表す。読み取りの繰り返しは制約の信頼、複数参照は両方の信頼が必要。最小件数のない任意フィールドの省略・空値は維持。通常の`T[]`は1件以上の配列型に代入不可。最小2件以上・最大件数・空文字の制約はAPI側に任せる。初期値による必須項目の省略は許可せず、`0`・`false`は許可する。
+- **APIが許可する必須真偽値の省略・必須カスタムへの`{}`も、書き込み型では拒否する。**
+
+[field-types.test.js](test/field-types.test.js)で全17設定を照合し、[required-rules.test.js](test/required-rules.test.js)で入力制約・不正設定、[required-combinations.test.js](test/required-combinations.test.js)で3層の異種繰り返し・オブジェクト形式・実レスポンスとの一致を検査します。[read-reference-rules.test.js](test/read-reference-rules.test.js)では`false`・`true`・空オブジェクト・参照の信頼OFF／ONを深度0〜3・ネスト・両API形式で確認し、書き込み型が変わらないことも検査します。合成スキーマは[required-combinations.mjs](test/helpers/required-combinations.mjs)、サービスごとの設定独立性は[cli-generation.test.js](test/cli-generation.test.js)で確認します。
+
 ### 検証方針
 
-管理画面の必須設定を根拠に、生成型から空値・省略を除外しません。必須項目の保存バリデーションと、旧リッチエディタのobject形式の自動推論、拡張フィールドUI独自のクリア値は検証対象外です。
+旧リッチエディタのobject形式の自動推論、拡張フィールドUI独自のクリア値は検証対象外です。
 
 ## SDKとの分担・データ更新
 

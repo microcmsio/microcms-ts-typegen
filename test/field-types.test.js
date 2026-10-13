@@ -7,8 +7,8 @@ import { generateTypes } from '../dist/generate.js';
 import { checkTypes } from './helpers/type-compiler.mjs';
 
 // 公式の16種類。セレクトは単一選択・複数選択の両設定を確認する。
-// readOptionalはトップレベルのキー省略。カスタムフィールド内では全項目が省略可能。
-// create/updateの項目も全て省略可能。ここには指定した場合の値の型を記載する。
+// この表は必須OFFの期待型。readOptionalはトップレベルのキー省略。
+// 必須OFFではカスタム内のreadとcreate/updateの全項目が省略可能。
 // https://document.microcms.io/content-api/get-api-field-responses
 const fieldCases = [
   {
@@ -174,7 +174,10 @@ const fieldCases = [
   },
 ];
 
-function generateFieldTypes(required = false) {
+function generateFieldTypes(
+  required = false,
+  trustReadFieldConstraints = false,
+) {
   const fields = fieldCases.map(({ id, schema }) => ({
     fieldId: id,
     ...schema,
@@ -208,7 +211,10 @@ function generateFieldTypes(required = false) {
       ],
       ['related', { apiFields: [], customFields: [] }],
     ]),
-    { serviceName: 'verification' },
+    {
+      serviceName: 'verification',
+      typeRules: { trustReadFieldConstraints },
+    },
   );
 }
 
@@ -226,17 +232,20 @@ type LeafCreate = { fieldId: 'leaf'; text?: string; number?: number; boolean?: b
 type LeafUpdate = { fieldId: 'leaf'; text?: string; number?: number | null; boolean?: boolean | null };
 `;
 
-function fieldAssertions({ id, read, readOptional, create, update }) {
+function fieldAssertions(
+  { id, read, readOptional, create, update },
+  { required = false, narrowed = false } = {},
+) {
   // Pickで値の型と「キー自体を省略できるか」を別々に保証する。
   // 出力全体の文字列検索では、別フィールド・別モードの宣言と一致してしまう。
   return `
 ${consumerTypes}
 type ReadField = Assert<Equal<Pick<Fields, '${id}'>, { ${id}${readOptional ? '?' : ''}: ${read} }>>;
-type CreateField = Assert<Equal<Pick<Create, '${id}'>, { ${id}?: ${create} }>>;
+type CreateField = Assert<Equal<Pick<Create, '${id}'>, { ${id}${required ? '' : '?'}: ${create} }>>;
 type UpdateField = Assert<Equal<Pick<Update, '${id}'>, { ${id}?: ${update} }>>;
-type CustomReadField = Assert<Equal<Pick<FieldsCustomFieldAllKinds, '${id}'>, { ${id}?: ${read} }>>;
-type CustomCreateField = Assert<Equal<Pick<CustomCreate, '${id}'>, { ${id}?: ${create} }>>;
-type CustomUpdateField = Assert<Equal<Pick<CustomUpdate, '${id}'>, { ${id}?: ${update} }>>;
+type CustomReadField = Assert<Equal<Pick<FieldsCustomFieldAllKinds, '${id}'>, { ${id}${narrowed ? '' : '?'}: ${read} }>>;
+type CustomCreateField = Assert<Equal<Pick<CustomCreate, '${id}'>, { ${id}${required ? '' : '?'}: ${create} }>>;
+type CustomUpdateField = Assert<Equal<Pick<CustomUpdate, '${id}'>, { ${id}${required ? '' : '?'}: ${update} }>>;
 `;
 }
 
@@ -254,8 +263,85 @@ test('all 16 field kinds match their read/create/update contracts', async (t) =>
   }
 });
 
-test('required settings do not discard omission or empty values for any field kind', () => {
-  assert.equal(generateFieldTypes(true), generateFieldTypes(false));
+// Explicit expectations for required fields, independent of the rendering logic.
+const requiredWriteTypes = {
+  images: '[string, ...string[]]',
+  singleSelect: '["One" | "Two", ...("One" | "Two")[]]',
+  multiSelect: '["One" | "Two", ...("One" | "Two")[]]',
+  relatedMany: '[string, ...string[]]',
+  blocks: '[LeafCreate, ...LeafCreate[]]',
+};
+const requiredReadTypes = {
+  text: 'string',
+  textArea: 'string',
+  html: 'string',
+  number: 'number',
+  details: 'LeafRead',
+  blocks: '[LeafRead, ...LeafRead[]]',
+};
+test('read narrowing leaves all optional field kinds unchanged', () => {
+  assert.equal(
+    generateFieldTypes(false, true),
+    generateFieldTypes(false, false),
+  );
+  assert.equal(
+    generateFieldTypes(false, { trustReferenceAvailability: true }),
+    generateFieldTypes(false, false),
+  );
+  assert.equal(generateFieldTypes(true, {}), generateFieldTypes(true, true));
+});
+test('all required field kinds enforce writes and only narrow reads when enabled', async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'microcms-required-fields-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  for (const [rule, narrowed, available] of [
+    [false, false, false],
+    [true, true, false],
+    [{}, true, false],
+    [{ trustReferenceAvailability: false }, true, false],
+    [{ trustReferenceAvailability: true }, true, true],
+  ]) {
+    const generated = join(directory, 'generated.ts');
+    await writeFile(generated, generateFieldTypes(true, rule));
+    const consumers = [];
+    for (const field of fieldCases) {
+      const create = requiredWriteTypes[field.id] ?? field.create;
+      const update =
+        {
+          boolean: 'boolean',
+          number: 'number',
+          related: 'string',
+          details: 'LeafUpdate',
+          blocks: '[LeafUpdate, ...LeafUpdate[]]',
+        }[field.id] ??
+        requiredWriteTypes[field.id] ??
+        field.update;
+      const path = join(directory, `${field.id}.ts`);
+      await writeFile(
+        path,
+        fieldAssertions(
+          {
+            ...field,
+            create,
+            update,
+            read: narrowed
+              ? ((available
+                  ? {
+                      related: 'Related',
+                      relatedMany: '[Related, ...Related[]]',
+                    }[field.id]
+                  : undefined) ??
+                requiredReadTypes[field.id] ??
+                field.read)
+              : field.read,
+            readOptional: narrowed ? false : field.readOptional,
+          },
+          { required: true, narrowed },
+        ),
+      );
+      consumers.push(path);
+    }
+    checkTypes([generated, ...consumers], ['--exactOptionalPropertyTypes']);
+  }
 });
 
 test('captured API fixtures contain every field kind and both select settings', async () => {

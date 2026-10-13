@@ -8,6 +8,9 @@ export type ApiInfo = {
 export type SchemaField = {
   fieldId: string;
   kind: string;
+  required?: boolean;
+  repeaterCountLimitValidation?: unknown;
+  relationListCountLimitValidation?: unknown;
   referencedApiEndpoint?: string;
   customFieldId?: string;
   customFieldIds?: unknown;

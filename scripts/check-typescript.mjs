@@ -8,6 +8,11 @@ const tests = [
   'relation-depth',
   'captured-schemas',
   'live-schema-values',
+  'required-write-values',
+  'required-rules',
+  'required-combinations',
+  'array-minimum-values',
+  'read-reference-rules',
 ].map((name) => `test/${name}.test.js`);
 const binary = compilerBinary();
 const version = spawnSync(process.execPath, [binary, '--version'], {

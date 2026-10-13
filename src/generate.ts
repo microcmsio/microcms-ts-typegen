@@ -4,9 +4,13 @@ import type {
   SchemaClient,
   SchemaField,
 } from './schema.js';
-import { isRecord } from './validation.js';
+import { isRecord, validateTypeRules } from './validation.js';
 
-type GenerateOptions = { extensionFieldTypes?: unknown; serviceName?: string };
+type GenerateOptions = {
+  extensionFieldTypes?: unknown;
+  serviceName?: string;
+  typeRules?: unknown;
+};
 type WriteMode = 'create' | 'update';
 
 const IDENTIFIER = /^[$A-Z_a-z][$\w]*$/;
@@ -107,8 +111,10 @@ const omittable = new Set([
 export function generateTypes(
   apis: ApiInfo[],
   schemas: Map<string, ApiSchema>,
-  { extensionFieldTypes = {}, serviceName }: GenerateOptions = {},
+  { extensionFieldTypes = {}, serviceName, typeRules }: GenerateOptions = {},
 ): string {
+  const { trustReadFieldConstraints, trustReferenceAvailability } =
+    validateTypeRules(typeRules);
   const names = new Map<string, string>();
   const used = new Map([
     ['MicroCMSImage', 'built-in image type'],
@@ -304,7 +310,65 @@ export function generateTypes(
     const custom = customNames.get(api.endpoint)!;
     const declarations: string[] = [];
 
-    function selectType(field: SchemaField): string {
+    function isRequired(field: SchemaField, prefix: string): boolean {
+      if (field.required !== undefined && typeof field.required !== 'boolean')
+        throw new Error(
+          `Invalid required in ${api.endpoint}.${prefix}${field.fieldId}`,
+        );
+      return field.required === true;
+    }
+
+    function requiresValue(field: SchemaField, prefix: string): boolean {
+      const setting =
+        field.kind === 'repeater'
+          ? (['repeaterCountLimitValidation', 'repeatCount'] as const)
+          : field.kind === 'relationList'
+            ? ([
+                'relationListCountLimitValidation',
+                'relationListCount',
+              ] as const)
+            : undefined;
+      let minimum = 0;
+      if (setting) {
+        const validation = field[setting[0]];
+        if (validation !== undefined && validation !== null) {
+          const bounds = isRecord(validation)
+            ? validation[setting[1]]
+            : undefined;
+          if (!isRecord(bounds))
+            throw new Error(
+              `Invalid ${setting[0]} in ${api.endpoint}.${prefix}${field.fieldId}`,
+            );
+          const value = bounds.min;
+          if (value !== undefined && value !== null) {
+            if (
+              typeof value !== 'number' ||
+              !Number.isSafeInteger(value) ||
+              value < 0
+            )
+              throw new Error(
+                `Invalid minimum count in ${api.endpoint}.${prefix}${field.fieldId}`,
+              );
+            minimum = value;
+          }
+        }
+      }
+      return isRequired(field, prefix) || minimum > 0;
+    }
+
+    function arrayType(
+      field: SchemaField,
+      element: string,
+      prefix: string,
+      group = false,
+    ): string {
+      const item = group ? `(${element})` : element;
+      return requiresValue(field, prefix)
+        ? `[${element}, ...${item}[]]`
+        : `${item}[]`;
+    }
+
+    function selectElementType(field: SchemaField): string {
       const items = field.selectItems;
       if (
         !Array.isArray(items) ||
@@ -318,7 +382,7 @@ export function generateTypes(
         );
       }
       const values = items.map((item) => JSON.stringify(item.value));
-      return `(${values.length ? union(values) : 'never'})[]`;
+      return values.length ? union(values) : 'never';
     }
 
     function repeaterIds(field: SchemaField): string[] {
@@ -355,7 +419,7 @@ export function generateTypes(
         case 'file':
           return 'MicroCMSFile';
         case 'select':
-          return selectType(field);
+          return `(${selectElementType(field)})[]`;
         case 'relation':
         case 'relationList': {
           const name =
@@ -367,7 +431,11 @@ export function generateTypes(
               `Relation target ${JSON.stringify(field.referencedApiEndpoint)} in ${api.endpoint}.${field.fieldId} was not found`,
             );
           const reference = `(__MicroCMSTypegenResolveDepth<Options> extends 0 ? { id: string } : ${name}<__MicroCMSTypegenReferenceOptions<Options>>)`;
-          return field.kind === 'relationList' ? `${reference}[]` : reference;
+          return field.kind === 'relationList'
+            ? trustReadFieldConstraints && trustReferenceAvailability
+              ? arrayType(field, reference, prefix)
+              : `${reference}[]`
+            : reference;
         }
         // Extension data can be any JSON value, including empty strings, null, and arrays.
         case 'iframe':
@@ -395,7 +463,10 @@ export function generateTypes(
               );
             return `${name}<Options>`;
           });
-          return `(${union(variants.length ? variants : ['never'])})[]`;
+          const element = union(variants.length ? variants : ['never']);
+          return trustReadFieldConstraints
+            ? arrayType(field, element, prefix, true)
+            : `(${element})[]`;
         }
         default:
           throw new Error(
@@ -420,9 +491,18 @@ export function generateTypes(
             `Duplicate field ${field.fieldId} in ${api.endpoint}`,
           );
         seen.add(field.fieldId);
-        const optional = optionalAll || omittable.has(field.kind) ? '?' : '';
+        const narrowed =
+          trustReadFieldConstraints && requiresValue(field, prefix);
+        const optional =
+          !narrowed && (optionalAll || omittable.has(field.kind)) ? '?' : '';
         const base = fieldType(field, prefix);
-        const type = nullable.has(field.kind) ? `${base} | null` : base;
+        // References can disappear from GET responses when their target is unpublished.
+        const type =
+          nullable.has(field.kind) &&
+          (!narrowed ||
+            (field.kind === 'relation' && !trustReferenceAvailability))
+            ? `${base} | null`
+            : base;
         return `  ${propertyName(field.fieldId)}${optional}: ${type};`;
       });
     }
@@ -432,6 +512,7 @@ export function generateTypes(
       mode: WriteMode,
       prefix: string,
     ): string {
+      const required = isRequired(field, prefix);
       switch (field.kind) {
         case 'text':
         case 'textArea':
@@ -441,18 +522,18 @@ export function generateTypes(
         case 'media':
         case 'file':
         case 'relation':
-          return field.kind === 'relation' && mode === 'update'
+          return field.kind === 'relation' && mode === 'update' && !required
             ? 'string | Record<string, never>'
             : 'string';
         case 'number':
-          return mode === 'update' ? 'number | null' : 'number';
+          return mode === 'update' && !required ? 'number | null' : 'number';
         case 'boolean':
-          return mode === 'update' ? 'boolean | null' : 'boolean';
+          return mode === 'update' && !required ? 'boolean | null' : 'boolean';
         case 'mediaList':
         case 'relationList':
-          return 'string[]';
+          return arrayType(field, 'string', prefix);
         case 'select':
-          return selectType(field);
+          return arrayType(field, selectElementType(field), prefix, true);
         case 'iframe': {
           const dataType = extensionDataTypes
             .get(api.endpoint)
@@ -471,7 +552,9 @@ export function generateTypes(
             throw new Error(
               `Unknown custom field ${JSON.stringify(field.customFieldId)} in ${api.endpoint}.${field.fieldId}`,
             );
-          return mode === 'update' ? `${name} | Record<string, never>` : name;
+          return mode === 'update' && !required
+            ? `${name} | Record<string, never>`
+            : name;
         }
         case 'repeater': {
           const namesForApi = (
@@ -485,7 +568,12 @@ export function generateTypes(
               );
             return name;
           });
-          return `(${union(variants.length ? variants : ['never'])})[]`;
+          return arrayType(
+            field,
+            union(variants.length ? variants : ['never']),
+            prefix,
+            true,
+          );
         }
         default:
           throw new Error(
@@ -498,10 +586,11 @@ export function generateTypes(
       fields: SchemaField[],
       mode: WriteMode,
       prefix = '',
+      custom = false,
     ): string[] {
       return fields.map(
         (field) =>
-          `  ${propertyName(field.fieldId)}?: ${writeFieldType(field, mode, prefix)};`,
+          `  ${propertyName(field.fieldId)}${requiresValue(field, prefix) && (mode === 'create' || custom) ? '' : '?'}: ${writeFieldType(field, mode, prefix)};`,
       );
     }
 
@@ -518,7 +607,7 @@ export function generateTypes(
           .get(api.endpoint)!
           .get(item.fieldId);
         declarations.push(
-          `type ${name} = {\n  fieldId: ${JSON.stringify(item.fieldId)};\n${renderWriteFields(item.fields, mode, `${item.fieldId}.`).join('\n')}\n};`,
+          `type ${name} = {\n  fieldId: ${JSON.stringify(item.fieldId)};\n${renderWriteFields(item.fields, mode, `${item.fieldId}.`, true).join('\n')}\n};`,
         );
       }
     }

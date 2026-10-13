@@ -12,7 +12,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import { createManagementClient, validateEndpoint } from './management.js';
 import { collectSchemas, GENERATED_HEADER } from './generate.js';
-import { hasErrorCode, isRecord } from './validation.js';
+import { hasErrorCode, isRecord, validateTypeRules } from './validation.js';
 
 type ParsedArgs = {
   help?: boolean;
@@ -27,6 +27,7 @@ type Job = {
   output: string;
   endpoints: string[] | undefined;
   extensionFieldTypes: unknown;
+  typeRules: unknown;
   serviceName: string;
 };
 
@@ -173,6 +174,7 @@ async function checkOverwrite(
 }
 
 function makeJob(config: Record<string, unknown>) {
+  validateTypeRules(config.typeRules);
   const endpointConfig = config.endpoints;
   let endpoints: string[] | undefined;
   if (endpointConfig !== undefined) {
@@ -190,13 +192,14 @@ function makeJob(config: Record<string, unknown>) {
     output: resolve(output),
     endpoints,
     extensionFieldTypes: config.extensionFieldTypes,
+    typeRules: config.typeRules,
   };
 }
 
 function makeJobs(config: Record<string, unknown>, options: ParsedArgs): Job[] {
   if (config.services === undefined) {
     throw new Error(
-      'Config must define services; put serviceDomain, apiKey, output, endpoints, and extensionFieldTypes inside services.<name>',
+      'Config must define services; put serviceDomain, apiKey, output, endpoints, extensionFieldTypes, and typeRules inside services.<name>',
     );
   }
   if (!isRecord(config.services) || Object.keys(config.services).length === 0) {
@@ -209,10 +212,11 @@ function makeJobs(config: Record<string, unknown>, options: ParsedArgs): Job[] {
       'output',
       'endpoints',
       'extensionFieldTypes',
+      'typeRules',
     ].some((key) => config[key] !== undefined)
   ) {
     throw new Error(
-      'Set serviceDomain, apiKey, output, endpoints, and extensionFieldTypes inside each service',
+      'Set serviceDomain, apiKey, output, endpoints, extensionFieldTypes, and typeRules inside each service',
     );
   }
   const services = config.services;
@@ -291,6 +295,7 @@ export async function run(
       content: await collectSchemas(client, job.endpoints, {
         extensionFieldTypes: job.extensionFieldTypes,
         serviceName: job.serviceName,
+        typeRules: job.typeRules,
       }),
     });
   }

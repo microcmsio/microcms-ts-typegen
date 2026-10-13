@@ -1,0 +1,1006 @@
+{
+  "serviceDomain": "typegen",
+  "endpoint": "typegen_matrix_reference_min",
+  "schema": {
+    "apiFields": [
+      {
+        "fieldId": "title",
+        "name": "title",
+        "kind": "text",
+        "description": null,
+        "required": false,
+        "textSizeLimitValidation": null,
+        "patternMatchValidation": null,
+        "isUnique": false,
+        "initialValue": null
+      },
+      {
+        "fieldId": "optionalRefs",
+        "name": "optionalRefs",
+        "kind": "relationList",
+        "description": null,
+        "required": false,
+        "relationListCountLimitValidation": {
+          "relationListCount": {
+            "min": 1,
+            "max": null
+          }
+        },
+        "listViewFieldId": "DEFAULT",
+        "referencedApiEndpoint": "typegen_matrix_values"
+      },
+      {
+        "fieldId": "requiredRefs",
+        "name": "requiredRefs",
+        "kind": "relationList",
+        "description": null,
+        "required": true,
+        "relationListCountLimitValidation": {
+          "relationListCount": {
+            "min": 1,
+            "max": null
+          }
+        },
+        "listViewFieldId": "DEFAULT",
+        "referencedApiEndpoint": "typegen_matrix_values"
+      },
+      {
+        "fieldId": "optionalBlocks",
+        "name": "optionalBlocks",
+        "kind": "repeater",
+        "description": null,
+        "required": false,
+        "repeaterCountLimitValidation": {
+          "repeatCount": {
+            "min": 1,
+            "max": null
+          }
+        },
+        "customFieldIds": [
+          "row"
+        ]
+      },
+      {
+        "fieldId": "requiredBlocks",
+        "name": "requiredBlocks",
+        "kind": "repeater",
+        "description": null,
+        "required": true,
+        "repeaterCountLimitValidation": {
+          "repeatCount": {
+            "min": 1,
+            "max": null
+          }
+        },
+        "customFieldIds": [
+          "row"
+        ]
+      }
+    ],
+    "customFields": [
+      {
+        "fieldId": "row",
+        "name": "row",
+        "fieldOrderByColumn": [
+          [
+            "text"
+          ]
+        ],
+        "fields": [
+          {
+            "fieldId": "text",
+            "name": "text",
+            "kind": "text",
+            "description": null,
+            "required": true,
+            "textSizeLimitValidation": null,
+            "patternMatchValidation": null,
+            "isUnique": false,
+            "initialValue": null
+          }
+        ]
+      }
+    ]
+  },
+  "target": {
+    "endpoint": "typegen_matrix_values",
+    "contentId": "typegen-ref-min-target"
+  },
+  "cases": [
+    {
+      "id": "put-omitted-optionals",
+      "method": "PUT",
+      "input": {
+        "title": "put-omitted-optionals",
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "post-omitted-optionals",
+      "method": "POST",
+      "input": {
+        "title": "post-omitted-optionals",
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-filled-optionals",
+      "method": "PUT",
+      "input": {
+        "title": "put-filled-optionals",
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "typegen-ref-put-filled-optionals"
+      },
+      "contentId": "typegen-ref-put-filled-optionals",
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:49.159Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:49.159Z",
+        "title": "put-filled-optionals",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-omit-optionals",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "title": "PATCH leaves optionals unchanged"
+      },
+      "status": 200,
+      "result": {
+        "id": "typegen-ref-put-filled-optionals"
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-empty-optional-refs",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "optionalRefs": []
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-null-optional-refs",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "optionalRefs": null
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-empty-optional-blocks",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "optionalBlocks": []
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-null-optional-blocks",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "optionalBlocks": null
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-empty-required-refs",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "requiredRefs": []
+      },
+      "status": 400,
+      "result": {
+        "message": "'requiredRefs' has unexpected data type."
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "patch-empty-required-blocks",
+      "method": "PATCH",
+      "contentId": "typegen-ref-put-filled-optionals",
+      "input": {
+        "requiredBlocks": []
+      },
+      "status": 400,
+      "result": {
+        "message": "'requiredBlocks' has unexpected data type."
+      },
+      "response": {
+        "id": "typegen-ref-put-filled-optionals",
+        "createdAt": "2026-10-13T01:05:49.159Z",
+        "updatedAt": "2026-10-13T01:05:52.008Z",
+        "publishedAt": "2026-10-13T01:05:49.159Z",
+        "revisedAt": "2026-10-13T01:05:52.008Z",
+        "title": "PATCH leaves optionals unchanged",
+        "optionalRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "requiredRefs": [
+          {
+            "id": "typegen-ref-min-target",
+            "createdAt": "2026-10-13T01:05:29.837Z",
+            "updatedAt": "2026-10-13T01:05:29.837Z",
+            "publishedAt": "2026-10-13T01:05:29.837Z",
+            "revisedAt": "2026-10-13T01:05:29.837Z",
+            "title": "Reference minimum test target",
+            "boolean": false,
+            "singleSelect": [],
+            "multiSelect": [],
+            "images": [],
+            "related": null,
+            "relatedMany": []
+          }
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      }
+    },
+    {
+      "id": "post-omit-optionalRefs",
+      "method": "POST",
+      "input": {
+        "title": "post-omit-optionalRefs",
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "post-empty-optionalRefs",
+      "method": "POST",
+      "input": {
+        "title": "post-empty-optionalRefs",
+        "optionalRefs": [],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "post-null-optionalRefs",
+      "method": "POST",
+      "input": {
+        "title": "post-null-optionalRefs",
+        "optionalRefs": null,
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "post-omit-optionalBlocks",
+      "method": "POST",
+      "input": {
+        "title": "post-omit-optionalBlocks",
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "post-empty-optionalBlocks",
+      "method": "POST",
+      "input": {
+        "title": "post-empty-optionalBlocks",
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "post-null-optionalBlocks",
+      "method": "POST",
+      "input": {
+        "title": "post-null-optionalBlocks",
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": null,
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-omit-optionalRefs",
+      "method": "PUT",
+      "input": {
+        "title": "put-omit-optionalRefs",
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-empty-optionalRefs",
+      "method": "PUT",
+      "input": {
+        "title": "put-empty-optionalRefs",
+        "optionalRefs": [],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-null-optionalRefs",
+      "method": "PUT",
+      "input": {
+        "title": "put-null-optionalRefs",
+        "optionalRefs": null,
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalRefs' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-omit-optionalBlocks",
+      "method": "PUT",
+      "input": {
+        "title": "put-omit-optionalBlocks",
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-empty-optionalBlocks",
+      "method": "PUT",
+      "input": {
+        "title": "put-empty-optionalBlocks",
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": [],
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      }
+    },
+    {
+      "id": "put-null-optionalBlocks",
+      "method": "PUT",
+      "input": {
+        "title": "put-null-optionalBlocks",
+        "optionalRefs": [
+          "typegen-ref-min-target"
+        ],
+        "requiredRefs": [
+          "typegen-ref-min-target"
+        ],
+        "optionalBlocks": null,
+        "requiredBlocks": [
+          {
+            "fieldId": "row",
+            "text": "Required element"
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalBlocks' field invalid. The value sent does not in the range."
+      }
+    }
+  ],
+  "uiChecks": [
+    {
+      "field": "optionalRefs",
+      "action": "add-draft",
+      "value": [],
+      "outcome": "rejected",
+      "message": "1個以上の選択が必要です"
+    },
+    {
+      "field": "optionalRefs",
+      "action": "publish",
+      "value": [],
+      "outcome": "rejected",
+      "message": "1個以上の選択が必要です"
+    },
+    {
+      "field": "optionalBlocks",
+      "action": "clear-field",
+      "value": [],
+      "outcome": "validation-error",
+      "message": "1個以上のフィールドが必要です"
+    }
+  ]
+}

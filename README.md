@@ -102,7 +102,7 @@ node dist/cli.js check
 
 設定ファイルはES modules形式のTypeScript（`.ts`）のみ対応しています。`package.json`で`"type": "commonjs"`を明示しているプロジェクトでの設定読み込みには対応していません。
 
-作業ディレクトリの`microcms-typegen.config.ts`を自動で読み込みます。設定ファイルの`services`にサービスごとの設定を記述します。[設定例](microcms-typegen.config.example.ts)は次の形式です。
+作業ディレクトリの`microcms-typegen.config.ts`を自動で読み込みます。設定ファイルの`services`にサービスごとの設定を記述します。以下はオプションを指定した例です。
 
 ```ts
 import type { Config } from 'microcms-typegen';
@@ -113,6 +113,11 @@ export default {
       serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN,
       apiKey: process.env.MICROCMS_API_INFO_API_KEY,
       output: './src/microcms-types.ts',
+      typeRules: {
+        trustReadFieldConstraints: {
+          trustReferenceAvailability: true,
+        },
+      },
       endpoints: ['blog', 'category'],
       extensionFieldTypes: {
         blog: {
@@ -142,6 +147,9 @@ export default {
 | `apiKey` | はい | [「API情報の取得」権限](https://document.microcms.io/management-api/get-api-info)を持つAPIキー |
 | `output` | はい | コマンドを実行したディレクトリを基準とする、生成する`.ts`ファイルのパス |
 | `endpoints` | いいえ | 対象APIのエンドポイントIDの配列。省略すると全APIが対象 |
+| `typeRules` | いいえ | 生成型のルール。省略したルールには既定値を適用 |
+| `typeRules.trustReadFieldConstraints` | いいえ | `true`またはオブジェクトで、保存済みデータが必須・最小件数1以上を満たすと信頼する。既定値は`false` |
+| `typeRules.trustReadFieldConstraints.trustReferenceAvailability` | いいえ | オブジェクト内で、参照先が取得できると信頼して参照型を絞る。既定値は`false` |
 | `extensionFieldTypes` | いいえ | エンドポイント・フィールドごとの拡張フィールド型の設定 |
 | `extensionFieldTypes.<endpoint>.<fieldPath>.from` | - | 生成ファイルから見た、型定義ファイルのモジュールパス |
 | `extensionFieldTypes.<endpoint>.<fieldPath>.data` | - | 型定義ファイルからエクスポートした`data`の型名 |
@@ -165,6 +173,16 @@ export type BlogExtension = {
 
 export type PanelEmbed = { html: string };
 ```
+
+### 型生成ルール（`typeRules`）
+
+運用上保証できる条件を指定することで、生成型に含まれる空値の可能性を絞れます。
+
+- `trustReadFieldConstraints`：保存済みデータが必須・最小件数1以上の制約を満たすことを保証できる場合に、ONにしてください。必須項目の空値を型から絞り、必須・最小件数1以上の繰り返しを1件以上の配列型にします。後から必須・最小件数を設定した場合は、既存データにおいて値が欠けていることがあります。
+- `trustReadFieldConstraints.trustReferenceAvailability`：参照先の公開状態やAPIキーの権限を含め、常に取得できることを保証できる場合に、ONにしてください。必須の単一参照から`null`を除き、必須・最小件数1以上の複数参照を1件以上の配列型にします。参照先が下書きのみ・公開終了の状態になり、APIキーにその状態を取得する権限がない場合は、参照が除外され、`null`や空配列になり得ます。
+
+> [!NOTE]
+> 上記のオプションは現在、読み取り型に適用されます。書き込みでは、これから送るデータを現在のスキーマに合わせて型検査するため、必須・最小件数1以上を常に反映します。
 
 ## CLIオプション
 
@@ -193,7 +211,7 @@ SDKの`createClient`にサービス型を指定すると、読み取りではエ
 登録方法が限定されている場合や、必須設定の設定タイミングによっては、実際には生じない空値まで含み、型が広くなることがあります。
 
 > [!NOTE]
-> 空値の厳格性を緩めるオプションの提供を今後検討します。
+> 必須項目などの読み取り型を絞る場合は、[型生成ルール](#型生成ルールtyperules)を参照してください。
 
 ## 開発者向け情報
 

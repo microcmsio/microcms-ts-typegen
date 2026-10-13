@@ -40,6 +40,135 @@ async function workspace(t) {
   return directory;
 }
 
+test('service read rules reach generated output and invalid rules fail before fetching', async (t) => {
+  const folder = await workspace(t);
+  const output = join(folder, 'types.ts');
+  let requests = 0;
+  const dependencies = {
+    requestIntervalMs: 0,
+    fetchImpl: async (url) => {
+      requests++;
+      return {
+        ok: true,
+        json: async () =>
+          url.endsWith('/apis')
+            ? { apis: [{ endpoint: 'blogs', type: 'list' }] }
+            : {
+                apiFields: [{ fieldId: 'title', kind: 'text', required: true }],
+                customFields: [],
+              },
+      };
+    },
+  };
+  let options = await configArgs(folder, output);
+  await run(['generate', ...options], dependencies);
+  assert.match(await readFile(output, 'utf8'), /title\?: string \| null/);
+  options = await configArgs(folder, output, {
+    typeRules: { trustReadFieldConstraints: true },
+  });
+  await assert.rejects(run(['check', ...options], dependencies), /out of date/);
+  await run(['generate', ...options], dependencies);
+  assert.match(await readFile(output, 'utf8'), /title: string/);
+  assert.doesNotMatch(
+    await readFile(output, 'utf8'),
+    /title\?: string \| null/,
+  );
+  await run(['check', ...options], dependencies);
+  const before = requests;
+  options = await configArgs(folder, output, {
+    typeRules: { trustReadFieldConstraints: 'true' },
+  });
+  await assert.rejects(
+    run(['generate', ...options], dependencies),
+    /must be a boolean/,
+  );
+  assert.equal(requests, before);
+  for (const typeRules of [
+    { trustReadReferenceAvailability: 'true' },
+    { trustRequiredReadFields: true },
+    { trustReadFieldConstraints: { enabled: true } },
+    { trustReadFieldConstraints: { trustReferenceAvailability: 'true' } },
+  ]) {
+    options = await configArgs(folder, output, { typeRules });
+    await assert.rejects(
+      run(['generate', ...options], dependencies),
+      /must be a boolean|Unknown .*option/,
+    );
+    assert.equal(requests, before);
+  }
+});
+
+test('read rule defaults remain independent across services and processing order', async (t) => {
+  const folder = await workspace(t);
+  const config = join(folder, 'config.ts');
+  const services = Object.fromEntries(
+    ['trusted', 'omitted', 'explicitFalse'].map((name) => [
+      name,
+      {
+        serviceDomain: 'sample',
+        apiKey: 'TEST_ONLY',
+        output: join(folder, `${name}.ts`),
+        ...(name === 'omitted'
+          ? {}
+          : {
+              typeRules: {
+                trustReadFieldConstraints:
+                  name === 'trusted'
+                    ? { trustReferenceAvailability: true }
+                    : false,
+              },
+            }),
+      },
+    ]),
+  );
+  const dependencies = {
+    requestIntervalMs: 0,
+    fetchImpl: async (url) => ({
+      ok: true,
+      json: async () =>
+        url.endsWith('/apis')
+          ? { apis: [{ endpoint: 'items', type: 'list' }] }
+          : {
+              apiFields: [
+                { fieldId: 'title', kind: 'text', required: true },
+                {
+                  fieldId: 'ref',
+                  kind: 'relation',
+                  referencedApiEndpoint: 'items',
+                  required: true,
+                },
+              ],
+              customFields: [],
+            },
+    }),
+  };
+  for (const order of [
+    ['trusted', 'omitted', 'explicitFalse'],
+    ['omitted', 'explicitFalse', 'trusted'],
+  ]) {
+    await writeFile(
+      config,
+      configSource({
+        services: Object.fromEntries(
+          order.map((name) => [name, services[name]]),
+        ),
+      }),
+    );
+    await run(['generate', '--config', config], dependencies);
+    for (const name of order) {
+      const output = await readFile(services[name].output, 'utf8');
+      if (name === 'trusted') {
+        assert.doesNotMatch(output, /title\?: string \| null/);
+        assert.doesNotMatch(output, /ref: .*\| null;/);
+      } else {
+        assert.match(output, /title\?: string \| null/);
+        assert.match(output, /ref: .*\| null;/);
+      }
+    }
+    await run(['check', '--config', config], dependencies);
+  }
+});
+
 test('output read failures are surfaced by generate and check without replacing the target', async (t) => {
   const directory = await workspace(t);
   const output = join(directory, 'directory.ts');
