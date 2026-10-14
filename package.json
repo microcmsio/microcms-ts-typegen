@@ -1,6 +1,6 @@
 {
   "name": "microcms-typegen",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "Generate TypeScript content types from microCMS Management API schemas",
   "license": "Apache-2.0",
   "type": "module",
@@ -12,6 +12,9 @@
   },
   "bin": {
     "microcms-typegen": "./dist/cli.js"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
