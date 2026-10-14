@@ -1,0 +1,3152 @@
+{
+  "serviceDomain": "typegen",
+  "endpoint": "typegen_matrix_required",
+  "schema": {
+    "apiFields": [
+      {
+        "fieldId": "title",
+        "name": "title",
+        "kind": "text",
+        "description": null,
+        "required": true,
+        "textSizeLimitValidation": null,
+        "patternMatchValidation": null,
+        "isUnique": false,
+        "initialValue": "initial title"
+      },
+      {
+        "fieldId": "count",
+        "name": "count",
+        "kind": "number",
+        "description": null,
+        "required": true,
+        "numberSizeLimitValidation": null,
+        "initialValue": null
+      },
+      {
+        "fieldId": "enabled",
+        "name": "enabled",
+        "kind": "boolean",
+        "description": null,
+        "required": true,
+        "initialValue": false
+      },
+      {
+        "fieldId": "details",
+        "name": "details",
+        "kind": "custom",
+        "description": null,
+        "required": true,
+        "listViewFieldId": "DEFAULT",
+        "customFieldId": "row"
+      },
+      {
+        "fieldId": "optionalDetails",
+        "name": "optionalDetails",
+        "kind": "custom",
+        "description": null,
+        "required": false,
+        "listViewFieldId": "DEFAULT",
+        "customFieldId": "row"
+      },
+      {
+        "fieldId": "blocks",
+        "name": "blocks",
+        "kind": "repeater",
+        "description": null,
+        "required": true,
+        "repeaterCountLimitValidation": {
+          "repeatCount": {
+            "min": 2,
+            "max": 3
+          }
+        },
+        "customFieldIds": [
+          "row"
+        ]
+      }
+    ],
+    "customFields": [
+      {
+        "fieldId": "row",
+        "name": "row",
+        "fieldOrderByColumn": [
+          [
+            "label",
+            "amount",
+            "note",
+            "children"
+          ]
+        ],
+        "fields": [
+          {
+            "fieldId": "label",
+            "name": "label",
+            "kind": "text",
+            "description": null,
+            "required": true,
+            "textSizeLimitValidation": null,
+            "patternMatchValidation": null,
+            "isUnique": false,
+            "initialValue": null
+          },
+          {
+            "fieldId": "amount",
+            "name": "amount",
+            "kind": "number",
+            "description": null,
+            "required": true,
+            "numberSizeLimitValidation": null,
+            "initialValue": null
+          },
+          {
+            "fieldId": "note",
+            "name": "note",
+            "kind": "text",
+            "description": null,
+            "required": false,
+            "textSizeLimitValidation": null,
+            "patternMatchValidation": null,
+            "isUnique": false,
+            "initialValue": null
+          },
+          {
+            "fieldId": "children",
+            "name": "children",
+            "kind": "repeater",
+            "description": null,
+            "required": true,
+            "repeaterCountLimitValidation": {
+              "repeatCount": {
+                "min": 1,
+                "max": 2
+              }
+            },
+            "customFieldIds": [
+              "leaf"
+            ]
+          }
+        ]
+      },
+      {
+        "fieldId": "leaf",
+        "name": "leaf",
+        "fieldOrderByColumn": [
+          [
+            "text",
+            "note"
+          ]
+        ],
+        "fields": [
+          {
+            "fieldId": "text",
+            "name": "text",
+            "kind": "text",
+            "description": null,
+            "required": true,
+            "textSizeLimitValidation": null,
+            "patternMatchValidation": null,
+            "isUnique": false,
+            "initialValue": null
+          },
+          {
+            "fieldId": "note",
+            "name": "note",
+            "kind": "text",
+            "description": null,
+            "required": false,
+            "textSizeLimitValidation": null,
+            "patternMatchValidation": null,
+            "isUnique": false,
+            "initialValue": null
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "create-valid-zero-false",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "create-valid-zero-false"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-omit-title",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'title' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-omit-count",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'count' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-omit-enabled",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "create-omit-enabled"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-omit-details",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-omit-blocks",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-clear-title",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'title' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-clear-count",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": null,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'count' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-clear-enabled",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": null,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'enabled' field invalid"
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-clear-details",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {},
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "create-clear-details"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "children": null
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-clear-blocks",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": []
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-custom-omit-required-label",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-optional-custom-omit-required-label",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ],
+        "optionalDetails": {
+          "fieldId": "row",
+          "amount": 0,
+          "note": "note optional",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf optional",
+              "note": "leaf note optional"
+            }
+          ]
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalDetails' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-repeater-omit-required-label",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-repeater-count-1",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' field invalid. The value sent does not in the range."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-repeater-count-3",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "1",
+            "amount": 0,
+            "note": "note 1",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 1",
+                "note": "leaf note 1"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "2",
+            "amount": 0,
+            "note": "note 2",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 2",
+                "note": "leaf note 2"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "create-repeater-count-3"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "1",
+            "amount": 0,
+            "note": "note 1",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 1",
+                "note": "leaf note 1"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "2",
+            "amount": 0,
+            "note": "note 2",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 2",
+                "note": "leaf note 2"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-repeater-count-4",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "1",
+            "amount": 0,
+            "note": "note 1",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 1",
+                "note": "leaf note 1"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "2",
+            "amount": 0,
+            "note": "note 2",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 2",
+                "note": "leaf note 2"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "3",
+            "amount": 0,
+            "note": "note 3",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 3",
+                "note": "leaf note 3"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' field invalid. The value sent does not in the range."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-nested-repeater-omitted",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details"
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-nested-repeater-count-0",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": []
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-nested-repeater-count-2",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf 0"
+            },
+            {
+              "fieldId": "leaf",
+              "text": "leaf 1"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "create-nested-repeater-count-2"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf 0"
+            },
+            {
+              "fieldId": "leaf",
+              "text": "leaf 1"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "create-nested-repeater-count-3",
+      "operation": "create",
+      "method": "PUT",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf 0"
+            },
+            {
+              "fieldId": "leaf",
+              "text": "leaf 1"
+            },
+            {
+              "fieldId": "leaf",
+              "text": "leaf 2"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-only-title",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "title": "updated title"
+      },
+      "status": 200,
+      "result": {
+        "id": "update-only-title"
+      },
+      "response": {
+        "title": "updated title",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-clear-title",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "title": ""
+      },
+      "status": 400,
+      "result": {
+        "message": "'title' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-clear-count",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "count": null
+      },
+      "status": 400,
+      "result": {
+        "message": "'count' field required error."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-clear-enabled",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "enabled": null
+      },
+      "status": 400,
+      "result": {
+        "message": "'enabled' field invalid"
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-clear-details",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {}
+      },
+      "status": 200,
+      "result": {
+        "id": "update-clear-details"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "children": null
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-clear-blocks",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": []
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-custom-label-only",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "label": "updated label"
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-custom-note-only",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "note": "updated note"
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-optional-custom-on-null",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "optionalDetails": {
+          "fieldId": "row",
+          "note": "updated optional note"
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'optionalDetails' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-custom-omit-field-id",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "label": "updated without fieldId"
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-repeater-element-label-only",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "updated A"
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-repeater-one-element-only",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "updated A",
+            "amount": 0,
+            "note": "note updated A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated A",
+                "note": "leaf note updated A"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' field invalid. The value sent does not in the range."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-repeater-fully-specified",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "updated A",
+            "amount": 0,
+            "note": "note updated A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated A",
+                "note": "leaf note updated A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "updated B",
+            "amount": 0,
+            "note": "note updated B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated B",
+                "note": "leaf note updated B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 200,
+      "result": {
+        "id": "update-repeater-fully-specified"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "updated A",
+            "amount": 0,
+            "note": "note updated A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated A",
+                "note": "leaf note updated A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "updated B",
+            "amount": 0,
+            "note": "note updated B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated B",
+                "note": "leaf note updated B"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-repeater-clear-nested-label",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-repeater-count-3",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "1",
+            "amount": 0,
+            "note": "note 1",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 1",
+                "note": "leaf note 1"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "2",
+            "amount": 0,
+            "note": "note 2",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 2",
+                "note": "leaf note 2"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 200,
+      "result": {
+        "id": "update-repeater-count-3"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "1",
+            "amount": 0,
+            "note": "note 1",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 1",
+                "note": "leaf note 1"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "2",
+            "amount": 0,
+            "note": "note 2",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 2",
+                "note": "leaf note 2"
+              }
+            ]
+          }
+        ]
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-repeater-count-4",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "0",
+            "amount": 0,
+            "note": "note 0",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 0",
+                "note": "leaf note 0"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "1",
+            "amount": 0,
+            "note": "note 1",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 1",
+                "note": "leaf note 1"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "2",
+            "amount": 0,
+            "note": "note 2",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 2",
+                "note": "leaf note 2"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "3",
+            "amount": 0,
+            "note": "note 3",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf 3",
+                "note": "leaf note 3"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'blocks' field invalid. The value sent does not in the range."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-nested-repeater-label-only",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "updated leaf"
+            }
+          ]
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-nested-repeater-count-0",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "children": []
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "update-nested-repeater-count-3",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf 0"
+            },
+            {
+              "fieldId": "leaf",
+              "text": "leaf 1"
+            },
+            {
+              "fieldId": "leaf",
+              "text": "leaf 2"
+            }
+          ]
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      },
+      "endpoint": "typegen_matrix_required"
+    },
+    {
+      "id": "post-valid-zero-false",
+      "endpoint": "typegen_matrix_required",
+      "operation": "create",
+      "method": "POST",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "post-valid-zero-false"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "post-omit-title",
+      "endpoint": "typegen_matrix_required",
+      "operation": "create",
+      "method": "POST",
+      "content": {
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 400,
+      "result": {
+        "message": "'title' field required error."
+      }
+    },
+    {
+      "id": "post-omit-enabled",
+      "endpoint": "typegen_matrix_required",
+      "operation": "create",
+      "method": "POST",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "post-omit-enabled"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "post-clear-details",
+      "endpoint": "typegen_matrix_required",
+      "operation": "create",
+      "method": "POST",
+      "content": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {},
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 201,
+      "result": {
+        "id": "post-clear-details"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "children": null
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "update-custom-required-only",
+      "endpoint": "typegen_matrix_required",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "label": "updated details",
+          "amount": 0,
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf updated details"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "result": {
+        "id": "update-custom-required-only"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "updated details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf updated details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "update-custom-required-without-children",
+      "endpoint": "typegen_matrix_required",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "row",
+          "label": "updated details",
+          "amount": 0
+        }
+      },
+      "status": 400,
+      "result": {
+        "message": "'details' has unexpected data type."
+      }
+    },
+    {
+      "id": "update-repeater-required-only",
+      "endpoint": "typegen_matrix_required",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "updated A",
+            "amount": 0,
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "updated B",
+            "amount": 0,
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated B"
+              }
+            ]
+          }
+        ]
+      },
+      "status": 200,
+      "result": {
+        "id": "update-repeater-required-only"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": null,
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "updated A",
+            "amount": 0,
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "updated B",
+            "amount": 0,
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf updated B"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "update-optional-custom-required-only",
+      "endpoint": "typegen_matrix_required",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "optionalDetails": {
+          "fieldId": "row",
+          "label": "optional",
+          "amount": 0,
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf optional"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "result": {
+        "id": "update-optional-custom-required-only"
+      },
+      "response": {
+        "title": "required test",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "fieldId": "row",
+          "label": "details",
+          "amount": 0,
+          "note": "note details",
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf details",
+              "note": "leaf note details"
+            }
+          ]
+        },
+        "optionalDetails": {
+          "fieldId": "row",
+          "label": "optional",
+          "amount": 0,
+          "children": [
+            {
+              "fieldId": "leaf",
+              "text": "leaf optional"
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "row",
+            "label": "A",
+            "amount": 0,
+            "note": "note A",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf A",
+                "note": "leaf note A"
+              }
+            ]
+          },
+          {
+            "fieldId": "row",
+            "label": "B",
+            "amount": 0,
+            "note": "note B",
+            "children": [
+              {
+                "fieldId": "leaf",
+                "text": "leaf B",
+                "note": "leaf note B"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "update-optional-custom-heading-only",
+      "endpoint": "typegen_matrix_nested",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "details": {
+          "fieldId": "section",
+          "heading": "updated heading"
+        }
+      },
+      "status": 200,
+      "result": {
+        "id": "update-optional-custom-heading-only"
+      },
+      "response": {
+        "title": "optional nested update",
+        "related": null,
+        "relatedMany": [],
+        "details": {
+          "fieldId": "section",
+          "heading": "updated heading",
+          "children": [
+            {
+              "fieldId": "textBlock",
+              "text": "previous text",
+              "number": 3,
+              "boolean": true
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "textBlock",
+            "text": "previous block",
+            "number": 7,
+            "boolean": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "update-optional-repeater-text-only",
+      "endpoint": "typegen_matrix_nested",
+      "operation": "update",
+      "method": "PATCH",
+      "content": {
+        "blocks": [
+          {
+            "fieldId": "textBlock",
+            "text": "updated block"
+          }
+        ]
+      },
+      "status": 200,
+      "result": {
+        "id": "update-optional-repeater-text-only"
+      },
+      "response": {
+        "title": "optional nested update",
+        "related": null,
+        "relatedMany": [],
+        "details": {
+          "fieldId": "section",
+          "heading": "previous heading",
+          "children": [
+            {
+              "fieldId": "textBlock",
+              "text": "previous text",
+              "number": 3,
+              "boolean": true
+            }
+          ]
+        },
+        "blocks": [
+          {
+            "fieldId": "textBlock",
+            "text": "updated block",
+            "boolean": false
+          }
+        ]
+      }
+    }
+  ],
+  "additionalSchemas": {
+    "typegen_matrix_nested": {
+      "apiFields": [
+        {
+          "fieldId": "title",
+          "name": "title",
+          "kind": "text",
+          "description": null,
+          "required": true,
+          "textSizeLimitValidation": null,
+          "patternMatchValidation": null,
+          "isUnique": false,
+          "initialValue": null
+        },
+        {
+          "fieldId": "related",
+          "name": "related",
+          "kind": "relation",
+          "description": null,
+          "required": false,
+          "listViewFieldId": "DEFAULT",
+          "referencedApiEndpoint": "typegen_matrix_values"
+        },
+        {
+          "fieldId": "relatedMany",
+          "name": "relatedMany",
+          "kind": "relationList",
+          "description": null,
+          "required": false,
+          "relationListCountLimitValidation": null,
+          "listViewFieldId": "DEFAULT",
+          "referencedApiEndpoint": "typegen_matrix_values"
+        },
+        {
+          "fieldId": "details",
+          "name": "details",
+          "kind": "custom",
+          "description": null,
+          "required": false,
+          "listViewFieldId": "DEFAULT",
+          "customFieldId": "section"
+        },
+        {
+          "fieldId": "blocks",
+          "name": "blocks",
+          "kind": "repeater",
+          "description": null,
+          "required": false,
+          "repeaterCountLimitValidation": null,
+          "customFieldIds": [
+            "section",
+            "textBlock"
+          ]
+        }
+      ],
+      "customFields": [
+        {
+          "fieldId": "textBlock",
+          "name": "textBlock",
+          "fieldOrderByColumn": [
+            [
+              "text",
+              "number",
+              "boolean",
+              "extension"
+            ]
+          ],
+          "fields": [
+            {
+              "fieldId": "text",
+              "name": "text",
+              "kind": "text",
+              "description": null,
+              "required": false,
+              "textSizeLimitValidation": null,
+              "patternMatchValidation": null,
+              "isUnique": false,
+              "initialValue": null
+            },
+            {
+              "fieldId": "number",
+              "name": "number",
+              "kind": "number",
+              "description": null,
+              "required": false,
+              "numberSizeLimitValidation": null,
+              "initialValue": null
+            },
+            {
+              "fieldId": "boolean",
+              "name": "boolean",
+              "kind": "boolean",
+              "description": null,
+              "required": false,
+              "initialValue": false
+            },
+            {
+              "fieldId": "extension",
+              "name": "extension",
+              "kind": "iframe",
+              "description": null,
+              "required": false,
+              "iframeUrl": "https://example.com/typegen-extension"
+            }
+          ]
+        },
+        {
+          "fieldId": "linkBlock",
+          "name": "linkBlock",
+          "fieldOrderByColumn": [
+            [
+              "label",
+              "target",
+              "targets",
+              "extension",
+              "choices"
+            ]
+          ],
+          "fields": [
+            {
+              "fieldId": "label",
+              "name": "label",
+              "kind": "text",
+              "description": null,
+              "required": false,
+              "textSizeLimitValidation": null,
+              "patternMatchValidation": null,
+              "isUnique": false,
+              "initialValue": null
+            },
+            {
+              "fieldId": "target",
+              "name": "target",
+              "kind": "relation",
+              "description": null,
+              "required": false,
+              "listViewFieldId": "DEFAULT",
+              "referencedApiEndpoint": "typegen_matrix_values"
+            },
+            {
+              "fieldId": "targets",
+              "name": "targets",
+              "kind": "relationList",
+              "description": null,
+              "required": false,
+              "relationListCountLimitValidation": null,
+              "listViewFieldId": "DEFAULT",
+              "referencedApiEndpoint": "typegen_matrix_values"
+            },
+            {
+              "fieldId": "extension",
+              "name": "extension",
+              "kind": "iframe",
+              "description": null,
+              "required": false,
+              "iframeUrl": "https://example.com/typegen-extension"
+            },
+            {
+              "fieldId": "choices",
+              "name": "choices",
+              "kind": "select",
+              "description": null,
+              "required": false,
+              "selectItems": [
+                {
+                  "id": "7tqfevCSxI",
+                  "value": "One"
+                },
+                {
+                  "id": "pm9MSgUYvn",
+                  "value": "Two"
+                }
+              ],
+              "multipleSelect": true,
+              "initialValue": [
+                "DEFAULT"
+              ]
+            }
+          ]
+        },
+        {
+          "fieldId": "group",
+          "name": "group",
+          "fieldOrderByColumn": [
+            [
+              "heading",
+              "items"
+            ]
+          ],
+          "fields": [
+            {
+              "fieldId": "heading",
+              "name": "heading",
+              "kind": "text",
+              "description": null,
+              "required": false,
+              "textSizeLimitValidation": null,
+              "patternMatchValidation": null,
+              "isUnique": false,
+              "initialValue": null
+            },
+            {
+              "fieldId": "items",
+              "name": "items",
+              "kind": "repeater",
+              "description": null,
+              "required": false,
+              "repeaterCountLimitValidation": null,
+              "customFieldIds": [
+                "textBlock",
+                "linkBlock"
+              ]
+            }
+          ]
+        },
+        {
+          "fieldId": "section",
+          "name": "section",
+          "fieldOrderByColumn": [
+            [
+              "heading",
+              "children"
+            ]
+          ],
+          "fields": [
+            {
+              "fieldId": "heading",
+              "name": "heading",
+              "kind": "text",
+              "description": null,
+              "required": false,
+              "textSizeLimitValidation": null,
+              "patternMatchValidation": null,
+              "isUnique": false,
+              "initialValue": null
+            },
+            {
+              "fieldId": "children",
+              "name": "children",
+              "kind": "repeater",
+              "description": null,
+              "required": false,
+              "repeaterCountLimitValidation": null,
+              "customFieldIds": [
+                "group",
+                "textBlock"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "uiChecks": [
+    {
+      "id": "ui-custom-empty-save-draft",
+      "endpoint": "typegen_matrix_required",
+      "action": "save-draft",
+      "input": {
+        "title": "Required custom UI verification",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "label": "",
+          "amount": "",
+          "children": []
+        }
+      },
+      "notification": "labelは必須項目です",
+      "contentGetStatus": 404
+    },
+    {
+      "id": "ui-custom-empty-publish",
+      "endpoint": "typegen_matrix_required",
+      "action": "publish",
+      "input": {
+        "title": "Required custom UI verification",
+        "count": 0,
+        "enabled": false,
+        "details": {
+          "label": "",
+          "amount": "",
+          "children": []
+        }
+      },
+      "notification": "labelは必須項目です",
+      "contentGetStatus": 404
+    }
+  ]
+}

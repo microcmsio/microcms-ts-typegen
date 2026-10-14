@@ -1,0 +1,341 @@
+#!/usr/bin/env node
+import {
+  readFile,
+  mkdir,
+  writeFile,
+  rename,
+  unlink,
+  realpath,
+} from 'node:fs/promises';
+import { resolve, dirname, extname } from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { randomUUID } from 'node:crypto';
+import { createManagementClient, validateEndpoint } from './management.js';
+import { collectSchemas, GENERATED_HEADER } from './generate.js';
+import { hasErrorCode, isRecord, validateTypeRules } from './validation.js';
+
+type ParsedArgs = {
+  help?: boolean;
+  force?: boolean;
+  service?: string;
+  config?: string;
+};
+type Dependencies = { fetchImpl?: typeof fetch; requestIntervalMs?: number };
+type Job = {
+  serviceDomain: string;
+  apiKey: string;
+  output: string;
+  endpoints: string[] | undefined;
+  extensionFieldTypes: unknown;
+  typeRules: unknown;
+  serviceName: string;
+};
+
+const HELP = `Usage: microcms-typegen <init|generate|check> [options]
+
+  init      Create a TypeScript config in the current directory (no overwrite)
+  generate  Write TypeScript types from the current Management API schemas
+  check     Compare current schemas with generated files without writing them
+
+Pass each value after its option, for example: --config ./microcms-typegen.config.ts
+
+Options:
+  --service <config-name>     Key under services in config, e.g. corporate
+  --config <file.ts>          TypeScript config path
+  --force                     Generate only: replace a file without the generated header
+  --help                      Show this help
+
+Examples:
+  microcms-typegen init
+  microcms-typegen generate --config ./microcms-typegen.config.ts
+  microcms-typegen generate --config ./microcms-typegen.config.ts --service corporate
+  microcms-typegen check --config ./microcms-typegen.config.ts
+`;
+
+const VALUE_HINTS = {
+  '--service': 'a key under services in the config, such as corporate',
+  '--config': 'a .ts file path',
+};
+
+function loadLocalEnv() {
+  try {
+    process.loadEnvFile(resolve('.env'));
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) throw error;
+  }
+}
+
+function parseArgs(args: string[]): ParsedArgs {
+  const result: ParsedArgs = {};
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--help' || arg === '-h') return { help: true };
+    if (arg === '--force') {
+      result.force = true;
+      continue;
+    }
+    const key =
+      arg === '--service'
+        ? 'service'
+        : arg === '--config'
+          ? 'config'
+          : undefined;
+    if (!key) throw new Error(`Unknown option: ${arg}`);
+    const value = args[++i];
+    if (!value || value.startsWith('--'))
+      throw new Error(
+        `Missing value for ${arg}: expected ${VALUE_HINTS[key === 'service' ? '--service' : '--config']}`,
+      );
+    result[key] = value;
+  }
+  return result;
+}
+
+async function loadConfig(
+  path: string | undefined,
+): Promise<Record<string, unknown>> {
+  const absolute = resolve(path ?? 'microcms-typegen.config.ts');
+  if (extname(absolute) !== '.ts') throw new Error('Config must be a .ts file');
+  try {
+    await readFile(absolute);
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) throw error;
+    throw new Error(
+      `Config file not found: ${absolute}. Run microcms-typegen init to create a config, or specify an existing file with --config.`,
+    );
+  }
+  const configUrl = pathToFileURL(absolute);
+  configUrl.searchParams.set('version', randomUUID());
+  const config: unknown = (await import(configUrl.href)).default;
+  if (!isRecord(config)) throw new Error('Config must export an object');
+  return config;
+}
+
+async function initConfig(): Promise<void> {
+  const name = 'microcms-typegen.config.ts';
+  const template = await readFile(
+    new URL('../microcms-typegen.config.example.ts', import.meta.url),
+    'utf8',
+  );
+  try {
+    await writeFile(resolve(name), template, { flag: 'wx' });
+    process.stdout.write(`Created ${name}.\n`);
+  } catch (error) {
+    if (!hasErrorCode(error, 'EEXIST')) throw error;
+    process.stdout.write(`Skipped ${name}: already exists.\n`);
+  }
+  process.stdout.write(
+    '\nSet the environment variables referenced in your config:\n  MICROCMS_SERVICE_DOMAIN\n  MICROCMS_API_INFO_API_KEY\n',
+  );
+}
+
+function normalizeLineEndings(content: string): string {
+  return content.replace(/\r\n/g, '\n');
+}
+
+async function saveIfChanged(path: string, content: string): Promise<boolean> {
+  const absolute = resolve(path);
+  try {
+    if (normalizeLineEndings(await readFile(absolute, 'utf8')) === content)
+      return false;
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) throw error;
+  }
+  await mkdir(dirname(absolute), { recursive: true });
+  const temporary = `${absolute}.${randomUUID()}.tmp`;
+  try {
+    await writeFile(temporary, content, { mode: 0o644, flag: 'wx' });
+    await rename(temporary, absolute);
+  } finally {
+    await unlink(temporary).catch((error) => {
+      if (!hasErrorCode(error, 'ENOENT')) throw error;
+    });
+  }
+  return true;
+}
+
+async function checkOverwrite(
+  path: string,
+  force: boolean | undefined,
+): Promise<void> {
+  try {
+    const existing = await readFile(path, 'utf8');
+    if (
+      !force &&
+      !normalizeLineEndings(existing).startsWith(`${GENERATED_HEADER}\n`)
+    ) {
+      throw new Error(
+        `Refusing to overwrite ${path}: it is not marked as generated by microcms-typegen. Choose another output in the config or pass --force to replace it.`,
+      );
+    }
+  } catch (error) {
+    if (!hasErrorCode(error, 'ENOENT')) throw error;
+  }
+}
+
+function makeJob(config: Record<string, unknown>) {
+  validateTypeRules(config.typeRules);
+  const endpointConfig = config.endpoints;
+  let endpoints: string[] | undefined;
+  if (endpointConfig !== undefined) {
+    if (!Array.isArray(endpointConfig) || endpointConfig.length === 0) {
+      throw new Error('endpoints must be a nonempty array');
+    }
+    endpoints = endpointConfig.map(validateEndpoint);
+  }
+  const output = config.output;
+  if (typeof output !== 'string' || !output.endsWith('.ts'))
+    throw new Error('output must be a .ts file path');
+  return {
+    serviceDomain: config.serviceDomain,
+    apiKey: config.apiKey,
+    output: resolve(output),
+    endpoints,
+    extensionFieldTypes: config.extensionFieldTypes,
+    typeRules: config.typeRules,
+  };
+}
+
+function makeJobs(config: Record<string, unknown>, options: ParsedArgs): Job[] {
+  if (config.services === undefined) {
+    throw new Error(
+      'Config must define services; put serviceDomain, apiKey, output, endpoints, extensionFieldTypes, and typeRules inside services.<name>',
+    );
+  }
+  if (!isRecord(config.services) || Object.keys(config.services).length === 0) {
+    throw new Error('services must be a nonempty object');
+  }
+  if (
+    [
+      'serviceDomain',
+      'apiKey',
+      'output',
+      'endpoints',
+      'extensionFieldTypes',
+      'typeRules',
+    ].some((key) => config[key] !== undefined)
+  ) {
+    throw new Error(
+      'Set serviceDomain, apiKey, output, endpoints, extensionFieldTypes, and typeRules inside each service',
+    );
+  }
+  const services = config.services;
+  const names = options.service ? [options.service] : Object.keys(services);
+  const jobs = names.map((name) => {
+    if (!Object.hasOwn(services, name))
+      throw new Error(`Unknown service: ${name}`);
+    const service = services[name];
+    if (!isRecord(service))
+      throw new Error(`Invalid config for service: ${name}`);
+    const job = makeJob(service);
+    function credential(field: 'serviceDomain' | 'apiKey'): string {
+      const value = job[field];
+      if (typeof value !== 'string' || !value.trim()) {
+        throw new Error(
+          `services.${name}.${field} is required. Check the config value and any environment variable it references.`,
+        );
+      }
+      return value;
+    }
+    return {
+      ...job,
+      serviceDomain: credential('serviceDomain'),
+      apiKey: credential('apiKey'),
+      serviceName: name,
+    };
+  });
+  const outputs = new Set<string>();
+  for (const job of jobs) {
+    if (outputs.has(job.output))
+      throw new Error(`Multiple services use output ${job.output}`);
+    outputs.add(job.output);
+  }
+  return jobs;
+}
+
+export async function run(
+  args: string[] = process.argv.slice(2),
+  dependencies: Dependencies = {},
+): Promise<void> {
+  if (args[0] === '--help' || args[0] === '-h') {
+    process.stdout.write(HELP);
+    return;
+  }
+  const command = args.shift();
+  if (command === undefined || !['init', 'generate', 'check'].includes(command))
+    throw new Error(
+      `Expected "init", "generate", or "check" command.\n${HELP}`,
+    );
+  const options = parseArgs(args);
+  if (options.help) {
+    process.stdout.write(HELP);
+    return;
+  }
+  if (command === 'init') {
+    if (Object.keys(options).length)
+      throw new Error('init does not accept options other than --help');
+    await initConfig();
+    return;
+  }
+  if (command === 'check' && options.force)
+    throw new Error('--force can only be used with generate');
+  loadLocalEnv();
+  const config = await loadConfig(options.config);
+  const jobs = makeJobs(config, options);
+  const generated: { output: string; content: string }[] = [];
+  for (const job of jobs) {
+    const client = createManagementClient({
+      serviceDomain: job.serviceDomain,
+      apiKey: job.apiKey,
+      fetchImpl: dependencies.fetchImpl,
+      requestIntervalMs: dependencies.requestIntervalMs,
+    });
+    generated.push({
+      output: job.output,
+      content: await collectSchemas(client, job.endpoints, {
+        extensionFieldTypes: job.extensionFieldTypes,
+        serviceName: job.serviceName,
+        typeRules: job.typeRules,
+      }),
+    });
+  }
+  if (command === 'check') {
+    let outdated = false;
+    for (const { output, content } of generated) {
+      let existing: string | undefined;
+      try {
+        existing = await readFile(output, 'utf8');
+      } catch (error) {
+        if (!hasErrorCode(error, 'ENOENT')) throw error;
+      }
+      const matches =
+        existing !== undefined && normalizeLineEndings(existing) === content;
+      process.stdout.write(
+        `${matches ? 'Up to date' : existing === undefined ? 'Missing' : 'Out of date'} ${output}\n`,
+      );
+      if (!matches) outdated = true;
+    }
+    if (outdated)
+      throw new Error(
+        'Generated types are out of date. Run microcms-typegen generate to update them.',
+      );
+    return;
+  }
+  for (const { output } of generated)
+    await checkOverwrite(output, options.force);
+  for (const { output, content } of generated) {
+    const changed = await saveIfChanged(output, content);
+    process.stdout.write(`${changed ? 'Generated' : 'Unchanged'} ${output}\n`);
+  }
+}
+
+if (
+  process.argv[1] &&
+  (await realpath(process.argv[1])) ===
+    (await realpath(fileURLToPath(import.meta.url)))
+) {
+  run().catch((error) => {
+    process.stderr.write(`microcms-typegen: ${error.message}\n`);
+    process.exitCode = 1;
+  });
+}

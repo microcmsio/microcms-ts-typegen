@@ -1,0 +1,14 @@
+{
+  "all": true,
+  "src": ["dist"],
+  "include": ["dist/**/*.js"],
+  "exclude": ["dist/config.js", "dist/schema.js"],
+  "reporter": ["text", "html", "lcov", "json-summary"],
+  "reports-dir": "coverage",
+  "check-coverage": true,
+  "per-file": true,
+  "statements": 98,
+  "lines": 98,
+  "functions": 100,
+  "branches": 95
+}
