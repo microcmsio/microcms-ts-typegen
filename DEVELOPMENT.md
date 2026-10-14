@@ -128,4 +128,14 @@ typegenはスキーマ取得と生成型の正しさ、SDKは生成型を使う�
 
 - [カバレッジ設定](.c8rc.json)：ファイルごとに文・行98%、分岐95%、関数100%。型定義のみのファイルは対象外で、生成型はコンパイルで検査します。レポートは`coverage/index.html`・`lcov.info`・`coverage-summary.json`です。
 - [CI](.github/workflows/ci.yml)：Node.js22.18.0・22系・24系でテスト・カバレッジ・型・パッケージを検査。TypeScript6.0.2の互換性とLint・フォーマットも検査し、カバレッジレポートを14日間保存します。
-- `test:package`とCIはnpmへ公開しません。npmの初期登録用は`0.0.0`（`bootstrap`タグ）、初回正式版は`1.0.0`です。レビュー後の公開に向け、パッケージ名の最終確認、npmのアカウント・公開権限、認証方法とリリース用CIを整えます。
+- `test:package`と通常のCIはnpmへ公開しません。公開パッケージ名はスコープなしの`microcms-typegen`です。npmの初期登録用は`0.0.0`（`bootstrap`タグ）、初回正式版は`1.0.0`です。
+- [公開ワークフロー](.github/workflows/publish.yml)：`v*`タグで起動し、バージョンの一致・`main`への反映、Lint・フォーマット・テスト・型・配布物を検査してから、Node.js24系でnpmへ`latest`として公開します。初期登録用の`0.0.0`やプレリリース版は対象外です。
+
+### 初回公開
+
+1. 公開ワークフローを`main`へマージし、CIの成功を確認します。
+2. npmにログインし、`npm publish --tag bootstrap`で`0.0.0`を初期登録します。
+3. npmのパッケージ設定でTrusted Publisherを登録します。Organizationは`microcmsio`、Repositoryは`microcms-ts-typegen`、Workflow filenameは`publish.yml`です。Environmentは空欄にし、`npm publish`を許可します。
+4. `package.json`・`package-lock.json`のバージョンを`1.0.0`に変更するPRをマージし、CIの成功後、そのコミットに`v1.0.0`タグを作成・pushします。
+
+公開ジョブだけに`id-token: write`を付与し、GitHubホストのランナーで[Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)を使用します。npmトークンの登録は不要です。npmのTrusted Publisher設定は初回公開の直前に行います。

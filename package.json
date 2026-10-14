@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "Generate TypeScript content types from microCMS Management API schemas",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microcmsio/microcms-ts-typegen.git"
+  },
   "type": "module",
   "types": "./dist/config.d.ts",
   "exports": {

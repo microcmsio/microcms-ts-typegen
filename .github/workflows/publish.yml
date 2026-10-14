@@ -1,0 +1,76 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  precheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.x'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Verify release tag and main history
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
+          assert.equal(process.env.GITHUB_REF_NAME, `v${version}`, 'Tag must match package.json version');
+          assert.match(version, /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/, 'Only stable versions can be published as latest');
+          assert.notEqual(version, '0.0.0', 'Publish the bootstrap version manually');
+          NODE
+          git merge-base --is-ancestor HEAD origin/main
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format
+      - name: Build, unit tests, generated types and coverage thresholds
+        run: npm run test:coverage
+      - name: Source and TypeScript consumer types
+        run: npm run test:types
+      - name: Installed npm package check
+        run: npm run test:package
+      - name: Install minimum supported TypeScript separately
+        run: npm install --prefix "$RUNNER_TEMP/microcms-ts6" --no-save --package-lock=false typescript@6.0.2
+      - name: TypeScript 6 compatibility
+        env:
+          MICROCMS_TYPESCRIPT_BINARY: ${{ runner.temp }}/microcms-ts6/node_modules/typescript/bin/tsc
+        run: |
+          npm run test:types
+          npm run test:package
+
+  publish:
+    needs: precheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.x'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm run build
+      - run: npm publish --tag latest
