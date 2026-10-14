@@ -17,12 +17,7 @@ CLIの実行自体にTypeScriptのインストールは不要です。
 
 ## 使い方
 
-### npmから利用する
-
-> [!NOTE]
-> npm公開後の利用手順です。公開前は下記のリポジトリからの手順で試してください。
-
-#### 1. 初期設定を作成する
+### 1. 初期設定を作成する
 
 導入するプロジェクトのルートで実行します。
 
@@ -33,7 +28,7 @@ npx microcms-typegen init
 
 `init`は実行したディレクトリに`microcms-typegen.config.ts`を作成します。既存ファイルは上書きせずスキップします。作成後は出力先を確認してください。
 
-#### 2. 環境変数を設定する
+### 2. 環境変数を設定する
 
 [「API情報の取得」権限](https://document.microcms.io/management-api/get-api-info)を持つAPIキーを用意し、プロジェクトの`.env`に設定します。既存の`.env`がある場合は、必要な項目を追加してください。
 
@@ -42,7 +37,7 @@ MICROCMS_SERVICE_DOMAIN=your-service
 MICROCMS_API_INFO_API_KEY=your-api-info-api-key
 ```
 
-#### 3. 型を生成・確認する
+### 3. 型を生成・確認する
 
 型を生成します。
 
@@ -54,38 +49,6 @@ npx microcms-typegen generate
 
 ```sh
 npx microcms-typegen check
-```
-
-### リポジトリから利用する（暫定）
-
-npm公開前に試すための手順です。クローンしたディレクトリ内で実行します。
-
-#### 1. リポジトリを取得して初期設定を作成する
-
-```sh
-git clone https://github.com/microcmsio/microcms-ts-typegen.git
-cd microcms-ts-typegen
-```
-
-PRのレビュー時は、ここで対象PRのブランチをチェックアウトしてから進めてください。
-
-```sh
-npm ci
-npm run build
-node dist/cli.js init
-```
-
-作成した`microcms-typegen.config.ts`の出力先を確認してください。
-
-#### 2. 環境変数を設定する
-
-クローンしたディレクトリの`.env`にサービスIDとAPIキーを設定します。必要な権限と変数名は、上記の[環境変数の設定](#2-環境変数を設定する)と同じです。
-
-#### 3. 型を生成・確認する
-
-```sh
-node dist/cli.js generate
-node dist/cli.js check
 ```
 
 ### コマンドの役割
@@ -102,7 +65,7 @@ node dist/cli.js check
 
 設定ファイルはES modules形式のTypeScript（`.ts`）のみ対応しています。`package.json`で`"type": "commonjs"`を明示しているプロジェクトでの設定読み込みには対応していません。
 
-作業ディレクトリの`microcms-typegen.config.ts`を自動で読み込みます。設定ファイルの`services`にサービスごとの設定を記述します。以下はオプションを指定した例です。
+作業ディレクトリの`microcms-typegen.config.ts`を自動で読み込みます。複数のmicroCMSサービスを1つの設定ファイルで管理でき、`services`にサービスごとの設定を記述します。以下は1サービスにオプションを指定した例です。
 
 ```ts
 import type { Config } from 'microcms-typegen';
