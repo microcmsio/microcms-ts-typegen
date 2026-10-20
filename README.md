@@ -1,6 +1,6 @@
 # microcms-typegen
 
-microCMSのマネジメントAPIスキーマから、`microcms-js-sdk`で使うTypeScript型を生成するCLIです。
+microCMSのAPIスキーマから、`microcms-js-sdk`で使うTypeScriptの型定義を自動生成するCLIです。
 
 ## 保守方針
 
