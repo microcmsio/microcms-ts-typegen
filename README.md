@@ -1,5 +1,7 @@
 # microcms-typegen
 
+[![npm version](https://img.shields.io/npm/v/microcms-typegen.svg)](https://www.npmjs.com/package/microcms-typegen)
+
 microCMSのAPIスキーマから、`microcms-js-sdk`で使うTypeScriptの型定義を自動生成するCLIです。
 
 ## 保守方針
