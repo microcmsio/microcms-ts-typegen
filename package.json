@@ -46,10 +46,11 @@
     "typescript": "^7.0.2"
   },
   "engines": {
-    "node": ">=22.18"
+    "node": "26.x"
   },
   "files": [
     "dist",
     "microcms-typegen.config.example.ts"
-  ]
+  ],
+  "packageManager": "npm@12.2.1"
 }
