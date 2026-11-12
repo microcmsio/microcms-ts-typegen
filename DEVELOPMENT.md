@@ -127,7 +127,7 @@ typegenはスキーマ取得と生成型の正しさ、SDKは生成型を使う�
 ## カバレッジ・CI・リリース
 
 - [カバレッジ設定](.c8rc.json)：ファイルごとに文・行98%、分岐95%、関数100%。型定義のみのファイルは対象外で、生成型はコンパイルで検査します。レポートは`coverage/index.html`・`lcov.info`・`coverage-summary.json`です。
-- [CI](.github/workflows/ci.yml)：Node.js22.23.5・22系・24系でテスト・カバレッジ・型・パッケージを検査。TypeScript6.0.2の互換性とLint・フォーマットも検査し、カバレッジレポートを14日間保存します。
+- [CI](.github/workflows/ci.yml)：Node.js22.18.0・22系・24系でテスト・カバレッジ・型・パッケージを検査。TypeScript6.0.2の互換性とLint・フォーマットも検査し、カバレッジレポートを14日間保存します。
 - `test:package`と通常のCIはnpmへ公開しません。公開パッケージ名はスコープなしの`microcms-typegen`です。npmの初期登録用は`0.0.0`（`bootstrap`タグ）、初回正式版は`1.0.0`です。
 - [公開ワークフロー](.github/workflows/publish.yml)：`v*`タグで起動し、バージョンの一致・`main`への反映、Lint・フォーマット・テスト・型・配布物を検査してから、Node.js24系でnpmへ`latest`として公開します。初期登録用の`0.0.0`やプレリリース版は対象外です。
 
